@@ -58,12 +58,10 @@ Build a comprehensive account management module for the Streamlined Properties m
 - **Backend API**: RESTful API with authentication, organizations, teams, invitations, and profile endpoints (documented in contracts/ directory)
 
 **Key External Integrations**:
-- **Google OAuth 2.0**: iOS and Android authentication with Expo AuthSession
-- **SMS Gateway (Twilio)**: OTP delivery for phone authentication
-- **Email Service (SendGrid)**: Verification, password reset, and invitation delivery
-- **Cloud Storage (S3/Firebase)**: Profile photo uploads via backend API
-- **Push Notifications (FCM)**: Invitation and team update notifications
+- **Google OAuth 2.0**: iOS and Android authentication with Expo AuthSession (mobile app integration)
+- **Push Notifications (FCM)**: Invitation and team update notifications (mobile app integration)
 - **Backend REST API**: All data operations with HTTPS-only communication
+  - Backend handles: SMS Gateway (Twilio) for OTP delivery, Email Service (SendGrid) for verification/password reset/invitations, Cloud Storage (S3/Firebase) for profile photo uploads
 
 ## Constitution Check
 
