@@ -1,0 +1,526 @@
+openapi: 3.0.3
+info:
+  title: Streamlined Properties - Profile API
+  description: |
+    User profile management endpoints for viewing and updating profile information,
+    managing authentication methods, and uploading profile photos.
+  version: 1.0.0
+  contact:
+    name: Streamlined Properties Development Team
+
+servers:
+  - url: https://api.streamlinedproperties.com/v1
+    description: Production API
+  - url: https://api-staging.streamlinedproperties.com/v1
+    description: Staging API
+  - url: http://localhost:3000/v1
+    description: Local development
+
+paths:
+  /users/me:
+    get:
+      summary: Get current user profile
+      description: Get authenticated user's profile information
+      operationId: getProfile
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: User profile
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    patch:
+      summary: Update user profile
+      description: |
+        Update user's name, email, or phone number. Email and phone changes may require verification.
+        Cannot remove email if it's the only authentication method.
+      operationId: updateProfile
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: John Smith
+                email:
+                  type: string
+                  format: email
+                  nullable: true
+                  example: john.smith@example.com
+                phoneNumber:
+                  type: string
+                  pattern: '^\+[1-9]\d{1,14}$'
+                  nullable: true
+                  example: +12125551234
+      responses:
+        '200':
+          description: Profile updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Invalid request or constraint violation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                validation:
+                  value:
+                    error:
+                      code: VALIDATION_ERROR
+                      message: Invalid request parameters
+                constraint:
+                  value:
+                    error:
+                      code: CANNOT_REMOVE_LAST_AUTH_METHOD
+                      message: Cannot remove email when it's your only authentication method
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Email or phone number already in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: EMAIL_ALREADY_EXISTS
+                  message: This email is already registered to another account
+
+  /users/me/profile-photo:
+    post:
+      summary: Upload profile photo
+      description: |
+        Upload or update user's profile photo. Image must be JPEG or PNG, max 5MB.
+        Image is automatically resized and optimized by backend.
+      operationId: uploadProfilePhoto
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required:
+                - photo
+              properties:
+                photo:
+                  type: string
+                  format: binary
+                  description: Image file (JPEG or PNG, max 5MB)
+      responses:
+        '200':
+          description: Profile photo uploaded successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  profilePhotoUrl:
+                    type: string
+                    format: uri
+                    example: https://storage.example.com/avatars/usr_abc123xyz.jpg
+        '400':
+          description: Invalid file
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                fileType:
+                  value:
+                    error:
+                      code: INVALID_FILE_TYPE
+                      message: Only JPEG and PNG images are supported
+                fileSize:
+                  value:
+                    error:
+                      code: FILE_TOO_LARGE
+                      message: Image must be smaller than 5MB
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    delete:
+      summary: Remove profile photo
+      description: Delete user's profile photo. Reverts to default avatar with initials.
+      operationId: deleteProfilePhoto
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      responses:
+        '204':
+          description: Profile photo removed successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /users/me/auth-methods:
+    get:
+      summary: List authentication methods
+      description: Get all authentication methods linked to user's account
+      operationId: listAuthMethods
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: List of authentication methods
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authMethods:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/AuthMethod'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+    post:
+      summary: Add authentication method
+      description: |
+        Link additional authentication method to account (Google, email/password, phone/OTP).
+        Allows user to sign in with multiple methods.
+      operationId: addAuthMethod
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - type: object
+                  required:
+                    - type
+                    - accessToken
+                  properties:
+                    type:
+                      type: string
+                      enum: [google]
+                      example: google
+                    accessToken:
+                      type: string
+                      example: ya29.a0AfH6SMBx...
+                - type: object
+                  required:
+                    - type
+                    - email
+                    - password
+                  properties:
+                    type:
+                      type: string
+                      enum: [email_password]
+                      example: email_password
+                    email:
+                      type: string
+                      format: email
+                      example: john.doe@example.com
+                    password:
+                      type: string
+                      minLength: 8
+                      example: SecurePass123!
+                - type: object
+                  required:
+                    - type
+                    - phoneNumber
+                  properties:
+                    type:
+                      type: string
+                      enum: [phone_otp]
+                      example: phone_otp
+                    phoneNumber:
+                      type: string
+                      pattern: '^\+[1-9]\d{1,14}$'
+                      example: +12125551234
+      responses:
+        '201':
+          description: Authentication method added successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  authMethod:
+                    $ref: '#/components/schemas/AuthMethod'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '409':
+          description: Authentication method already linked or in use
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                alreadyLinked:
+                  value:
+                    error:
+                      code: AUTH_METHOD_ALREADY_LINKED
+                      message: This authentication method is already linked to your account
+                emailInUse:
+                  value:
+                    error:
+                      code: EMAIL_ALREADY_EXISTS
+                      message: This email is already registered to another account
+
+  /users/me/auth-methods/{methodId}:
+    delete:
+      summary: Remove authentication method
+      description: |
+        Unlink authentication method from account. Cannot remove last authentication method.
+        User must have at least one way to sign in.
+      operationId: removeAuthMethod
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: methodId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: auth_method_abc123
+      responses:
+        '204':
+          description: Authentication method removed successfully
+        '400':
+          description: Cannot remove last authentication method
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: CANNOT_REMOVE_LAST_AUTH_METHOD
+                  message: You must have at least one authentication method
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /users/me/change-password:
+    post:
+      summary: Change password
+      description: |
+        Change account password. Requires current password for verification.
+        Only available for accounts with email/password authentication method.
+      operationId: changePassword
+      tags:
+        - Profile
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - currentPassword
+                - newPassword
+              properties:
+                currentPassword:
+                  type: string
+                  example: OldPass123!
+                newPassword:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                  example: NewSecurePass123!
+      responses:
+        '200':
+          description: Password changed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password changed successfully
+        '400':
+          description: Invalid passwords
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                validation:
+                  value:
+                    error:
+                      code: VALIDATION_ERROR
+                      message: New password does not meet requirements
+                noPasswordAuth:
+                  value:
+                    error:
+                      code: NO_PASSWORD_AUTH_METHOD
+                      message: Account does not have password authentication enabled
+        '401':
+          description: Current password incorrect
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INCORRECT_PASSWORD
+                  message: Current password is incorrect
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoints
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          example: usr_abc123xyz
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: john.doe@example.com
+        phoneNumber:
+          type: string
+          nullable: true
+          example: +12125551234
+        profilePhotoUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: https://storage.example.com/avatars/usr_abc123xyz.jpg
+        authMethods:
+          type: array
+          items:
+            type: string
+            enum: [google, email_password, phone_otp]
+          example: [google, email_password]
+        lastActiveAt:
+          type: string
+          format: date-time
+          example: '2025-11-29T14:30:00Z'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-11-01T10:00:00Z'
+        status:
+          type: string
+          enum: [active, suspended, deleted]
+          example: active
+
+    AuthMethod:
+      type: object
+      properties:
+        id:
+          type: string
+          example: auth_method_abc123
+        type:
+          type: string
+          enum: [google, email_password, phone_otp]
+          example: google
+        identifier:
+          type: string
+          description: Email, phone number, or Google account identifier
+          example: john.doe@example.com
+        addedAt:
+          type: string
+          format: date-time
+          example: '2025-11-01T10:00:00Z'
+        lastUsedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: '2025-11-29T14:30:00Z'
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Invalid request parameters
+            details:
+              type: object
+              additionalProperties: true
+              nullable: true
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: Authentication token is missing or invalid
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: NOT_FOUND
+              message: Resource not found
+
+security:
+  - BearerAuth: []

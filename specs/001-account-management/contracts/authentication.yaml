@@ -1,0 +1,666 @@
+openapi: 3.0.3
+info:
+  title: Streamlined Properties - Authentication API
+  description: |
+    Authentication endpoints for user signup, signin, Google OAuth, phone OTP verification, 
+    password reset, and session management. All endpoints except signup/signin require 
+    authentication via Bearer token in Authorization header.
+  version: 1.0.0
+  contact:
+    name: Streamlined Properties Development Team
+
+servers:
+  - url: https://api.streamlinedproperties.com/v1
+    description: Production API
+  - url: https://api-staging.streamlinedproperties.com/v1
+    description: Staging API
+  - url: http://localhost:3000/v1
+    description: Local development
+
+paths:
+  /auth/signup:
+    post:
+      summary: Create new user account with email/password
+      description: |
+        Register a new user with email and password. Sends verification email to provided address.
+        User can access app immediately without email verification, but some features may be restricted.
+      operationId: signup
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  minLength: 2
+                  maxLength: 100
+                  example: John Doe
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                  description: Must contain uppercase, lowercase, number, and special character
+                  example: SecurePass123!
+      responses:
+        '201':
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email already registered
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: EMAIL_ALREADY_EXISTS
+                  message: An account with this email already exists
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /auth/signin:
+    post:
+      summary: Sign in with email/password
+      description: Authenticate existing user with email and password credentials
+      operationId: signin
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+                - password
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+                password:
+                  type: string
+                  example: SecurePass123!
+                rememberMe:
+                  type: boolean
+                  default: false
+                  description: If true, session expires in 7 days; otherwise 1 hour
+      responses:
+        '200':
+          description: Authentication successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid credentials
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVALID_CREDENTIALS
+                  message: Email or password is incorrect
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /auth/google:
+    post:
+      summary: Sign in or sign up with Google OAuth
+      description: |
+        Authenticate user with Google OAuth access token. If user doesn't exist, creates new account.
+        Backend verifies token with Google and creates/updates user record.
+      operationId: googleAuth
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - accessToken
+              properties:
+                accessToken:
+                  type: string
+                  description: Google OAuth access token from Expo AuthSession
+                  example: ya29.a0AfH6SMBx...
+      responses:
+        '200':
+          description: Authentication successful (existing user)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '201':
+          description: User account created successfully (new user)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid Google token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVALID_GOOGLE_TOKEN
+                  message: Google access token is invalid or expired
+
+  /auth/phone/request-otp:
+    post:
+      summary: Request OTP for phone authentication
+      description: |
+        Send one-time password (OTP) via SMS to provided phone number. OTP is valid for 10 minutes.
+        Rate limited to prevent abuse.
+      operationId: requestOtp
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - phoneNumber
+              properties:
+                phoneNumber:
+                  type: string
+                  pattern: '^\+[1-9]\d{1,14}$'
+                  description: Phone number in E.164 format
+                  example: +12125551234
+      responses:
+        '200':
+          description: OTP sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  sessionId:
+                    type: string
+                    description: Session ID for verifying OTP (valid for 10 minutes)
+                    example: otp_session_abc123xyz
+                  expiresAt:
+                    type: string
+                    format: date-time
+                    description: When OTP expires
+                    example: '2025-11-29T15:10:00Z'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          description: Too many OTP requests
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: TOO_MANY_OTP_REQUESTS
+                  message: Please wait 60 seconds before requesting another OTP
+
+  /auth/phone/verify-otp:
+    post:
+      summary: Verify OTP and authenticate
+      description: |
+        Verify OTP code and authenticate user. If phone number is not registered, creates new account.
+        If phone number is registered, signs in existing user.
+      operationId: verifyOtp
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - sessionId
+                - code
+              properties:
+                sessionId:
+                  type: string
+                  description: Session ID from request-otp endpoint
+                  example: otp_session_abc123xyz
+                code:
+                  type: string
+                  pattern: '^\d{6}$'
+                  description: 6-digit OTP code
+                  example: '123456'
+                name:
+                  type: string
+                  description: Required for new users, ignored for existing users
+                  example: John Doe
+      responses:
+        '200':
+          description: Authentication successful (existing user)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '201':
+          description: User account created successfully (new user)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid or expired OTP
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVALID_OTP
+                  message: OTP code is incorrect or expired
+
+  /auth/forgot-password:
+    post:
+      summary: Request password reset email
+      description: |
+        Send password reset link to user's email. Link is valid for 24 hours.
+        Rate limited to prevent abuse.
+      operationId: forgotPassword
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - email
+              properties:
+                email:
+                  type: string
+                  format: email
+                  example: john.doe@example.com
+      responses:
+        '200':
+          description: Password reset email sent (always returns 200 even if email not found for security)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: If an account with that email exists, a password reset link has been sent
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '429':
+          $ref: '#/components/responses/RateLimitExceeded'
+
+  /auth/reset-password:
+    post:
+      summary: Reset password with reset token
+      description: Complete password reset using token from reset email
+      operationId: resetPassword
+      tags:
+        - Authentication
+      security: []  # Public endpoint
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - token
+                - password
+              properties:
+                token:
+                  type: string
+                  description: Reset token from email link
+                  example: rst_abc123xyz789
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 128
+                  description: New password
+                  example: NewSecurePass123!
+      responses:
+        '200':
+          description: Password reset successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Password reset successfully
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Invalid or expired reset token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVALID_RESET_TOKEN
+                  message: Password reset link is invalid or expired
+
+  /auth/signout:
+    post:
+      summary: Sign out and invalidate session
+      description: Invalidate current session token. Client should clear local storage and SecureStore.
+      operationId: signout
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Signed out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                    example: Signed out successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/refresh:
+    post:
+      summary: Refresh session token
+      description: |
+        Extend session using refresh token. Returns new access token and refresh token.
+        Used to keep user authenticated without requiring re-login.
+      operationId: refreshSession
+      tags:
+        - Authentication
+      security: []  # Public endpoint (uses refresh token)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - refreshToken
+              properties:
+                refreshToken:
+                  type: string
+                  description: Refresh token from initial authentication
+                  example: rt_vwx678yz0
+      responses:
+        '200':
+          description: Session refreshed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '401':
+          description: Invalid or expired refresh token
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVALID_REFRESH_TOKEN
+                  message: Refresh token is invalid or expired
+
+  /auth/session:
+    get:
+      summary: Validate current session
+      description: Check if current session token is valid and return user data
+      operationId: validateSession
+      tags:
+        - Authentication
+      security:
+        - BearerAuth: []
+      responses:
+        '200':
+          description: Session is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  user:
+                    $ref: '#/components/schemas/User'
+                  session:
+                    $ref: '#/components/schemas/Session'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoints
+
+  schemas:
+    User:
+      type: object
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: usr_abc123xyz
+        name:
+          type: string
+          example: John Doe
+        email:
+          type: string
+          format: email
+          nullable: true
+          example: john.doe@example.com
+        phoneNumber:
+          type: string
+          nullable: true
+          example: +12125551234
+        profilePhotoUrl:
+          type: string
+          format: uri
+          nullable: true
+          example: https://storage.example.com/avatars/usr_abc123xyz.jpg
+        authMethods:
+          type: array
+          items:
+            type: string
+            enum: [google, email_password, phone_otp]
+          example: [google, email_password]
+        lastActiveAt:
+          type: string
+          format: date-time
+          example: '2025-11-29T14:30:00Z'
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-11-01T10:00:00Z'
+        status:
+          type: string
+          enum: [active, suspended, deleted]
+          example: active
+
+    Session:
+      type: object
+      properties:
+        id:
+          type: string
+          example: ses_pqr345stu
+        userId:
+          type: string
+          example: usr_abc123xyz
+        activeOrganizationId:
+          type: string
+          nullable: true
+          example: org_xyz789abc
+        token:
+          type: string
+          description: JWT access token
+          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+        refreshToken:
+          type: string
+          description: Refresh token for extending session
+          example: rt_vwx678yz0
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-11-29T14:00:00Z'
+        expiresAt:
+          type: string
+          format: date-time
+          example: '2025-12-06T14:00:00Z'
+        rememberMe:
+          type: boolean
+          example: true
+        deviceInfo:
+          type: object
+          properties:
+            platform:
+              type: string
+              enum: [ios, android]
+              example: ios
+            osVersion:
+              type: string
+              example: '17.0'
+            appVersion:
+              type: string
+              example: 1.0.0
+            deviceModel:
+              type: string
+              example: iPhone 15 Pro
+            deviceId:
+              type: string
+              example: anon_abc123xyz
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Invalid request parameters
+            details:
+              type: object
+              additionalProperties: true
+              nullable: true
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: VALIDATION_ERROR
+              message: Invalid request parameters
+              details:
+                email: Invalid email format
+
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: Authentication token is missing or invalid
+
+    RateLimitExceeded:
+      description: Too many requests
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: RATE_LIMIT_EXCEEDED
+              message: Too many requests. Please try again later
+
+security:
+  - BearerAuth: []
