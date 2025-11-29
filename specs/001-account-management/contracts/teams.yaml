@@ -1,0 +1,736 @@
+openapi: 3.0.3
+info:
+  title: Streamlined Properties - Teams API
+  description: |
+    Team member management endpoints for listing members, inviting new members, 
+    updating member roles, and removing members. Requires Owner or Admin role for most operations.
+  version: 1.0.0
+  contact:
+    name: Streamlined Properties Development Team
+
+servers:
+  - url: https://api.streamlinedproperties.com/v1
+    description: Production API
+  - url: https://api-staging.streamlinedproperties.com/v1
+    description: Staging API
+  - url: http://localhost:3000/v1
+    description: Local development
+
+paths:
+  /organizations/{organizationId}/members:
+    get:
+      summary: List organization members
+      description: |
+        Get all members of an organization with their roles and membership details.
+        Supports pagination for large teams. Requires any valid role in the organization.
+      operationId: listMembers
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: org_xyz789abc
+        - name: page
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          example: 1
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+          example: 20
+        - name: role
+          in: query
+          required: false
+          description: Filter by role
+          schema:
+            type: string
+            enum: [owner, admin, manager, agent, viewer]
+          example: manager
+      responses:
+        '200':
+          description: List of members
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  members:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/MemberWithUser'
+                  pagination:
+                    $ref: '#/components/schemas/Pagination'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /organizations/{organizationId}/members/{memberId}:
+    get:
+      summary: Get member details
+      description: Get detailed information about a specific member
+      operationId: getMember
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: org_xyz789abc
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: mem_def456ghi
+      responses:
+        '200':
+          description: Member details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  member:
+                    $ref: '#/components/schemas/MemberWithUser'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    patch:
+      summary: Update member role
+      description: |
+        Update a member's role in the organization. Requires Owner or Admin role.
+        Cannot change owner role or demote yourself if you're the last owner.
+      operationId: updateMemberRole
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: org_xyz789abc
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: mem_def456ghi
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - role
+              properties:
+                role:
+                  type: string
+                  enum: [admin, manager, agent, viewer]
+                  example: manager
+      responses:
+        '200':
+          description: Member role updated successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  member:
+                    $ref: '#/components/schemas/OrganizationMember'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Insufficient permissions or invalid operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notAuthorized:
+                  value:
+                    error:
+                      code: FORBIDDEN
+                      message: Only Owner or Admin can change member roles
+                cannotChangeOwner:
+                  value:
+                    error:
+                      code: CANNOT_CHANGE_OWNER_ROLE
+                      message: Cannot change owner role. Transfer ownership first
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Remove member from organization
+      description: |
+        Remove a member from the organization. Requires Owner or Admin role.
+        Cannot remove owner (must transfer ownership first) or yourself.
+      operationId: removeMember
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: org_xyz789abc
+        - name: memberId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: mem_def456ghi
+      responses:
+        '204':
+          description: Member removed successfully
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          description: Insufficient permissions or invalid operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                notAuthorized:
+                  value:
+                    error:
+                      code: FORBIDDEN
+                      message: Only Owner or Admin can remove members
+                cannotRemoveOwner:
+                  value:
+                    error:
+                      code: CANNOT_REMOVE_OWNER
+                      message: Cannot remove owner. Transfer ownership first
+                cannotRemoveSelf:
+                  value:
+                    error:
+                      code: CANNOT_REMOVE_SELF
+                      message: Use leave organization endpoint to remove yourself
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /organizations/{organizationId}/invitations:
+    get:
+      summary: List pending invitations
+      description: |
+        Get all pending invitations for the organization. Requires Owner or Admin role.
+        Shows invitations that haven't been accepted, expired, or revoked.
+      operationId: listInvitations
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: org_xyz789abc
+        - name: status
+          in: query
+          required: false
+          description: Filter by invitation status
+          schema:
+            type: string
+            enum: [pending, accepted, expired, revoked]
+            default: pending
+          example: pending
+      responses:
+        '200':
+          description: List of invitations
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invitations:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Invitation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    post:
+      summary: Invite new member
+      description: |
+        Create invitation to join organization. Sends email or SMS with deep link.
+        Requires Owner or Admin role. Cannot invite existing members or duplicate pending invitations.
+      operationId: inviteMember
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: organizationId
+          in: path
+          required: true
+          schema:
+            type: string
+          example: org_xyz789abc
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - inviteeContact
+                - inviteeContactType
+                - assignedRole
+              properties:
+                inviteeContact:
+                  type: string
+                  description: Email or phone number based on contactType
+                  example: jane.smith@example.com
+                inviteeContactType:
+                  type: string
+                  enum: [email, phone]
+                  example: email
+                assignedRole:
+                  type: string
+                  enum: [admin, manager, agent, viewer]
+                  example: manager
+                message:
+                  type: string
+                  maxLength: 500
+                  nullable: true
+                  example: Hi Jane, I'd love for you to join our team!
+      responses:
+        '201':
+          description: Invitation created and sent successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invitation:
+                    $ref: '#/components/schemas/Invitation'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '409':
+          description: Invitation conflict
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                alreadyMember:
+                  value:
+                    error:
+                      code: ALREADY_MEMBER
+                      message: This user is already a member of the organization
+                duplicateInvitation:
+                  value:
+                    error:
+                      code: DUPLICATE_INVITATION
+                      message: A pending invitation already exists for this contact
+
+  /invitations/{token}:
+    get:
+      summary: Get invitation details by token
+      description: |
+        Get invitation details using token from deep link. Used when user clicks invitation link.
+        Public endpoint - no authentication required.
+      operationId: getInvitationByToken
+      tags:
+        - Teams
+      security: []  # Public endpoint
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 7f8c9d4e-2b3a-4c5d-8e9f-0a1b2c3d4e5f
+      responses:
+        '200':
+          description: Invitation details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invitation:
+                    $ref: '#/components/schemas/InvitationWithDetails'
+        '404':
+          description: Invitation not found or expired
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: INVITATION_NOT_FOUND
+                  message: Invitation not found or has expired
+
+    post:
+      summary: Accept invitation
+      description: |
+        Accept invitation and join organization. User must be authenticated.
+        If invitation is expired or revoked, returns error.
+      operationId: acceptInvitation
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 7f8c9d4e-2b3a-4c5d-8e9f-0a1b2c3d4e5f
+      responses:
+        '200':
+          description: Invitation accepted successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  membership:
+                    $ref: '#/components/schemas/OrganizationMember'
+                  invitation:
+                    $ref: '#/components/schemas/Invitation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '400':
+          description: Invalid invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              examples:
+                expired:
+                  value:
+                    error:
+                      code: INVITATION_EXPIRED
+                      message: This invitation has expired
+                revoked:
+                  value:
+                    error:
+                      code: INVITATION_REVOKED
+                      message: This invitation has been revoked
+                alreadyAccepted:
+                  value:
+                    error:
+                      code: INVITATION_ALREADY_ACCEPTED
+                      message: This invitation has already been accepted
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    delete:
+      summary: Revoke invitation
+      description: |
+        Revoke pending invitation. Requires Owner or Admin role.
+        Only pending invitations can be revoked.
+      operationId: revokeInvitation
+      tags:
+        - Teams
+      security:
+        - BearerAuth: []
+      parameters:
+        - name: token
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+          example: 7f8c9d4e-2b3a-4c5d-8e9f-0a1b2c3d4e5f
+      responses:
+        '200':
+          description: Invitation revoked successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  invitation:
+                    $ref: '#/components/schemas/Invitation'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '400':
+          description: Cannot revoke invitation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error:
+                  code: CANNOT_REVOKE_INVITATION
+                  message: Only pending invitations can be revoked
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: JWT token obtained from authentication endpoints
+
+  schemas:
+    OrganizationMember:
+      type: object
+      properties:
+        id:
+          type: string
+          example: mem_def456ghi
+        userId:
+          type: string
+          example: usr_abc123xyz
+        organizationId:
+          type: string
+          example: org_xyz789abc
+        role:
+          type: string
+          enum: [owner, admin, manager, agent, viewer]
+          example: manager
+        status:
+          type: string
+          enum: [active, removed]
+          example: active
+        joinedAt:
+          type: string
+          format: date-time
+          example: '2025-11-15T09:30:00Z'
+        invitedBy:
+          type: string
+          nullable: true
+          example: usr_xyz123abc
+
+    MemberWithUser:
+      allOf:
+        - $ref: '#/components/schemas/OrganizationMember'
+        - type: object
+          properties:
+            user:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: usr_abc123xyz
+                name:
+                  type: string
+                  example: Jane Smith
+                email:
+                  type: string
+                  nullable: true
+                  example: jane.smith@example.com
+                phoneNumber:
+                  type: string
+                  nullable: true
+                  example: +12125559876
+                profilePhotoUrl:
+                  type: string
+                  nullable: true
+                  example: https://storage.example.com/avatars/usr_abc123xyz.jpg
+                lastActiveAt:
+                  type: string
+                  format: date-time
+                  example: '2025-11-28T10:00:00Z'
+
+    Invitation:
+      type: object
+      properties:
+        id:
+          type: string
+          example: inv_jkl012mno
+        token:
+          type: string
+          format: uuid
+          example: 7f8c9d4e-2b3a-4c5d-8e9f-0a1b2c3d4e5f
+        inviterId:
+          type: string
+          example: usr_abc123xyz
+        inviteeContact:
+          type: string
+          example: jane.smith@example.com
+        inviteeContactType:
+          type: string
+          enum: [email, phone]
+          example: email
+        organizationId:
+          type: string
+          example: org_xyz789abc
+        assignedRole:
+          type: string
+          enum: [admin, manager, agent, viewer]
+          example: manager
+        status:
+          type: string
+          enum: [pending, accepted, expired, revoked]
+          example: pending
+        message:
+          type: string
+          nullable: true
+          example: Hi Jane, join our team!
+        createdAt:
+          type: string
+          format: date-time
+          example: '2025-11-25T10:00:00Z'
+        expiresAt:
+          type: string
+          format: date-time
+          example: '2025-12-09T10:00:00Z'
+        acceptedAt:
+          type: string
+          format: date-time
+          nullable: true
+          example: null
+
+    InvitationWithDetails:
+      allOf:
+        - $ref: '#/components/schemas/Invitation'
+        - type: object
+          properties:
+            organization:
+              type: object
+              properties:
+                id:
+                  type: string
+                  example: org_xyz789abc
+                name:
+                  type: string
+                  example: Acme Property Management
+                logoUrl:
+                  type: string
+                  nullable: true
+                  example: https://storage.example.com/logos/org_xyz789abc.png
+            inviter:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: John Doe
+                profilePhotoUrl:
+                  type: string
+                  nullable: true
+                  example: https://storage.example.com/avatars/usr_abc123xyz.jpg
+
+    Pagination:
+      type: object
+      properties:
+        page:
+          type: integer
+          example: 1
+        limit:
+          type: integer
+          example: 20
+        total:
+          type: integer
+          example: 45
+        totalPages:
+          type: integer
+          example: 3
+
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            code:
+              type: string
+              example: VALIDATION_ERROR
+            message:
+              type: string
+              example: Invalid request parameters
+            details:
+              type: object
+              additionalProperties: true
+              nullable: true
+
+  responses:
+    BadRequest:
+      description: Invalid request parameters
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+    Unauthorized:
+      description: Missing or invalid authentication token
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: UNAUTHORIZED
+              message: Authentication token is missing or invalid
+
+    Forbidden:
+      description: Insufficient permissions
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: FORBIDDEN
+              message: You do not have permission to perform this action
+
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+          example:
+            error:
+              code: NOT_FOUND
+              message: Resource not found
+
+security:
+  - BearerAuth: []
