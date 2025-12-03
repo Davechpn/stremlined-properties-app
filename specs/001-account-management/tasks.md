@@ -337,14 +337,14 @@
 - [x] T192 Code cleanup: Remove any duplicate code, extract shared logic to custom hooks in hooks/, extract shared utilities to lib/utils/
 - [x] T193 Code review: Verify all files follow kebab-case naming (screens, components, hooks, services), all components use PascalCase
 - [x] T194 Code review: Verify all custom hooks use camelCase with "use" prefix, all constants use SCREAMING_SNAKE_CASE
-- [ ] T195 Security audit: Verify all tokens stored in Expo SecureStore, no sensitive data in AsyncStorage, all API calls use HTTPS
-- [ ] T196 Security audit: Verify all user inputs are validated and sanitized before API calls
+- [x] T195 Security audit: Verify all tokens stored in Expo SecureStore, no sensitive data in AsyncStorage, all API calls use HTTPS
+- [x] T196 Security audit: Verify all user inputs are validated and sanitized before API calls
 - [ ] T197 Performance audit: Measure app startup time (target: <3 seconds), screen load times (target: <2 seconds), animation frame rates (target: 60fps)
 - [ ] T198 Performance audit: Verify app bundle size under 50MB using `expo export --platform all` and analyzing output
-- [ ] T199 Sentry verification: Confirm error boundaries wrap all major sections (root layout, auth screens, dashboard, profile)
-- [ ] T200 Sentry verification: Confirm all API calls include performance monitoring traces
-- [ ] T201 Sentry verification: Test error capturing by triggering intentional errors, verify they appear in Sentry dashboard with full context
-- [ ] T202 Reactotron verification: Confirm all API calls logged (request/response/timing), navigation events tracked, AsyncStorage operations logged
+- [x] T199 Sentry verification: Confirm error boundaries wrap all major sections (root layout, auth screens, dashboard, profile)
+- [x] T200 Sentry verification: Confirm all API calls include performance monitoring traces
+- [x] T201 Sentry verification: Test error capturing by triggering intentional errors, verify they appear in Sentry dashboard with full context
+- [x] T202 Reactotron verification: Confirm all API calls logged (request/response/timing), navigation events tracked, AsyncStorage operations logged
 - [ ] T203 Final testing: Test complete authentication flow (sign up → sign out → sign in → password reset) on both iOS and Android
 - [ ] T204 Final testing: Test organization creation and switching with multiple organizations on both platforms
 - [ ] T205 Final testing: Test team invitation end-to-end (send → receive → accept) with both existing and new users
