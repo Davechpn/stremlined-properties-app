@@ -168,6 +168,11 @@ export const OrganizationSwitcher: React.FC<OrganizationSwitcherProps> = ({
             keyExtractor={(item) => item.id}
             ItemSeparatorComponent={() => <Divider style={styles.divider} />}
             contentContainerStyle={styles.listContent}
+            // Performance optimizations
+            windowSize={10}
+            maxToRenderPerBatch={10}
+            removeClippedSubviews
+            initialNumToRender={15}
           />
         )}
       </View>

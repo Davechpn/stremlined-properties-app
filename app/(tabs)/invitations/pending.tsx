@@ -247,6 +247,11 @@ export default function PendingInvitationsScreen() {
           />
         }
         showsVerticalScrollIndicator={false}
+        // Performance optimizations
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        removeClippedSubviews
+        initialNumToRender={15}
       />
     </View>
   );

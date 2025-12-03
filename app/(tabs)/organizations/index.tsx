@@ -182,6 +182,11 @@ export default function OrganizationsScreen() {
             description="You are not a member of any organizations yet."
           />
         }
+        // Performance optimizations
+        windowSize={10}
+        maxToRenderPerBatch={10}
+        removeClippedSubviews
+        initialNumToRender={15}
       />
 
       {/* Snackbar for notifications */}
