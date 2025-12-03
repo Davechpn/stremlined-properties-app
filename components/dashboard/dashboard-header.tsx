@@ -7,6 +7,7 @@
 
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { useOfflineStatus } from '@/hooks/use-offline-status';
 import { User } from '@/types/auth';
 import { OrganizationWithMember, Role } from '@/types/organization';
 import * as Haptics from 'expo-haptics';
@@ -49,6 +50,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   hasMultipleOrganizations = false,
 }) => {
   const theme = useTheme();
+  const { isOffline } = useOfflineStatus();
 
   const handleSwitcherPress = async () => {
     await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);

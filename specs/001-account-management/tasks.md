@@ -325,8 +325,8 @@
 
 **Purpose**: Improvements that affect multiple user stories and final quality assurance
 
-- [ ] T183 [P] Add offline detection in hooks/use-offline-status.ts using NetInfo, show offline indicator in dashboard header
-- [ ] T184 [P] Implement error boundary fallback UI with "Retry" button and helpful error messages
+- [x] T183 [P] Add offline detection in hooks/use-offline-status.ts using NetInfo, show offline indicator in dashboard header
+- [x] T184 [P] Implement error boundary fallback UI with "Retry" button and helpful error messages
 - [ ] T185 [P] Add empty state illustrations to assets/images/empty-states/ for no organizations, no members, no invitations
 - [ ] T186 [P] Optimize all images using expo-image with proper sizing, caching, and blurhash placeholders
 - [ ] T187 [P] Ensure all animations use react-native-reanimated for 60fps performance on UI thread
