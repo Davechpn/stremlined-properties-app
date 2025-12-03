@@ -327,16 +327,16 @@
 
 - [x] T183 [P] Add offline detection in hooks/use-offline-status.ts using NetInfo, show offline indicator in dashboard header
 - [x] T184 [P] Implement error boundary fallback UI with "Retry" button and helpful error messages
-- [ ] T185 [P] Add empty state illustrations to assets/images/empty-states/ for no organizations, no members, no invitations
-- [ ] T186 [P] Optimize all images using expo-image with proper sizing, caching, and blurhash placeholders
-- [ ] T187 [P] Ensure all animations use react-native-reanimated for 60fps performance on UI thread
-- [ ] T188 [P] Verify all FlatLists use optimized props (windowSize, maxToRenderPerBatch, removeClippedSubviews) for scrolling performance
+- [x] T185 [P] Add empty state illustrations to assets/images/empty-states/ for no organizations, no members, no invitations
+- [x] T186 [P] Optimize all images using expo-image with proper sizing, caching, and blurhash placeholders
+- [x] T187 [P] Ensure all animations use react-native-reanimated for 60fps performance on UI thread
+- [x] T188 [P] Verify all FlatLists use optimized props (windowSize, maxToRenderPerBatch, removeClippedSubviews) for scrolling performance
 - [ ] T189 [P] Add VoiceOver/TalkBack accessibility labels to all interactive elements
 - [ ] T190 [P] Test app with system font size adjustments (Settings → Accessibility → Text Size) on iOS and Android
-- [ ] T191 [P] Verify app supports dark mode correctly using React Native Paper theme system
-- [ ] T192 Code cleanup: Remove any duplicate code, extract shared logic to custom hooks in hooks/, extract shared utilities to lib/utils/
-- [ ] T193 Code review: Verify all files follow kebab-case naming (screens, components, hooks, services), all components use PascalCase
-- [ ] T194 Code review: Verify all custom hooks use camelCase with "use" prefix, all constants use SCREAMING_SNAKE_CASE
+- [x] T191 [P] Verify app supports dark mode correctly using React Native Paper theme system
+- [x] T192 Code cleanup: Remove any duplicate code, extract shared logic to custom hooks in hooks/, extract shared utilities to lib/utils/
+- [x] T193 Code review: Verify all files follow kebab-case naming (screens, components, hooks, services), all components use PascalCase
+- [x] T194 Code review: Verify all custom hooks use camelCase with "use" prefix, all constants use SCREAMING_SNAKE_CASE
 - [ ] T195 Security audit: Verify all tokens stored in Expo SecureStore, no sensitive data in AsyncStorage, all API calls use HTTPS
 - [ ] T196 Security audit: Verify all user inputs are validated and sanitized before API calls
 - [ ] T197 Performance audit: Measure app startup time (target: <3 seconds), screen load times (target: <2 seconds), animation frame rates (target: 60fps)
