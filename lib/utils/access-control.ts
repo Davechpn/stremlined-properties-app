@@ -7,7 +7,7 @@
 
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { warningFeedback } from '@/lib/utils/haptics';
 import { Alert, Platform, ToastAndroid } from 'react-native';
 
 /**
@@ -54,7 +54,7 @@ export function showAccessDenied(
   });
 
   // Haptic feedback
-  Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
+  warningFeedback();
 
   // Show notification
   if (Platform.OS === 'android') {

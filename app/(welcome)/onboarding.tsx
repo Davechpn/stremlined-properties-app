@@ -6,7 +6,7 @@
 
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import type { OnboardingSlide } from '@/types/welcome';
-import * as Haptics from 'expo-haptics';
+import { lightImpact } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';
@@ -58,7 +58,7 @@ export default function OnboardingScreen() {
   };
 
   const handleNext = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     
     if (currentIndex < SLIDES.length - 1) {
       flatListRef.current?.scrollToIndex({
@@ -73,7 +73,7 @@ export default function OnboardingScreen() {
   };
 
   const handleSkip = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     logToReactotron('Onboarding skipped', { currentIndex });
     router.push('./get-started');
   };

@@ -10,7 +10,7 @@ import { removeRefreshToken, removeToken, storeRefreshToken, storeToken } from '
 import type { ApiResponse } from '@/types/api';
 import type { AuthCredentials, AuthenticationResponse, PasswordReset, PasswordResetRequest, SignUpCredentials, User } from '@/types/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import * as Haptics from 'expo-haptics';
+import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import apiClient from './client';
 
 /**
@@ -119,12 +119,12 @@ export function useSignUp() {
       logAuthFlowToReactotron('Sign up successful', { userId: authResponse.user.id });
       
       // Haptic feedback
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
     },
     onError: (error) => {
       logAuthEvent('signup', 'email', error as Error);
       logAuthFlowToReactotron('Sign up failed', { error: (error as Error).message });
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      errorFeedback();
     },
   });
 }
@@ -188,7 +188,7 @@ export function useSignIn() {
       logAuthFlowToReactotron('Sign in successful', { userId: authResponse.user.id });
       
       // Haptic feedback
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       console.log('🟢 [useSignIn] onSuccess completed');
     },
     onError: (error) => {
@@ -199,7 +199,7 @@ export function useSignIn() {
         // @ts-ignore - error may have response property
         statusCode: error?.response?.status 
       });
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      errorFeedback();
     },
   });
 }
@@ -254,11 +254,11 @@ export function useForgotPassword() {
     onSuccess: () => {
       logAuthEvent('password_reset', 'email');
       logAuthFlowToReactotron('Password reset email sent');
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      successFeedback();
     },
     onError: (error) => {
       logAuthFlowToReactotron('Password reset request failed', { error: (error as Error).message });
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      errorFeedback();
     },
   });
 }
@@ -290,11 +290,11 @@ export function useResetPassword() {
       logAuthFlowToReactotron('Password reset successful, please sign in');
       
       // Haptic feedback
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
     },
     onError: (error) => {
       logAuthFlowToReactotron('Password reset failed', { error: (error as Error).message });
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      errorFeedback();
     },
   });
 }

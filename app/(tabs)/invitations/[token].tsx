@@ -15,7 +15,7 @@ import { Role } from '@/types/organization';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
 import { formatDistanceToNow } from 'date-fns';
-import * as Haptics from 'expo-haptics';
+import { mediumImpact, lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { Image, ScrollView, StyleSheet, View } from 'react-native';
@@ -71,7 +71,7 @@ export default function InvitationAcceptanceScreen() {
   // Handle accept invitation
   const handleAccept = async () => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      await mediumImpact();
 
       logToReactotron('Accepting invitation', {
         token,
@@ -80,9 +80,9 @@ export default function InvitationAcceptanceScreen() {
 
       await acceptInvitation();
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
-      logToReactotron('Invitation accepted successfully', {
+      logToReactotron('Invitation accepted', {
         organizationId: invitation?.organizationId,
       });
 

@@ -11,7 +11,7 @@ import { useInvitationManagement } from '@/hooks/use-invitations';
 import { Role } from '@/types/organization';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { successFeedback, errorFeedback, lightImpact } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -37,7 +37,7 @@ export default function InviteMemberScreen() {
 
       await sendInvitation(data);
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       logToReactotron('Invitation sent successfully', {
         contact: data.inviteeContact,
@@ -104,7 +104,7 @@ export default function InviteMemberScreen() {
 
   // Handle back press
   const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.back();
   };
 

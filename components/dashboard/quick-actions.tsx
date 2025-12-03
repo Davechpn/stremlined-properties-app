@@ -5,7 +5,7 @@
  * Actions are contextual based on user's role and organization state.
  */
 
-import * as Haptics from 'expo-haptics';
+import { lightImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button, useTheme } from 'react-native-paper';
@@ -37,7 +37,7 @@ export const QuickActions: React.FC<QuickActionsProps> = ({
   const theme = useTheme();
 
   const handleActionPress = async (action: Action) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     action.onPress();
   };
 

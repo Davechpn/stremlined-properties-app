@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics';
+import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -46,12 +46,12 @@ export default function ResetPasswordScreen() {
         confirmPassword,
       });
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       // Auto sign-in happens in useResetPassword hook
       router.replace('/(app)/dashboard' as any);
     } catch (err) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       alert('Failed to reset password. Please try again.');
     } finally {
       setLoading(false);

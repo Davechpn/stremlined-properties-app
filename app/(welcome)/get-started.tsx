@@ -7,7 +7,7 @@
 import { HAS_SEEN_ONBOARDING_KEY } from '@/constants/auth';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import { setItem } from '@/services/storage/async-storage';
-import * as Haptics from 'expo-haptics';
+import { mediumImpact, lightImpact } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -25,7 +25,7 @@ export default function GetStartedScreen() {
   }, []);
 
   const handleGetStarted = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await mediumImpact();
     logToReactotron('Get Started (signup) button tapped');
     
     // TODO: Navigate to sign-up screen once Phase 4 is complete
@@ -34,7 +34,7 @@ export default function GetStartedScreen() {
   };
 
   const handleSignIn = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     logToReactotron('Sign In button tapped');
     
     // TODO: Navigate to sign-in screen once Phase 4 is complete

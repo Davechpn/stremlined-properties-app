@@ -6,7 +6,7 @@
 
 import { APP_NAME } from '@/constants/app';
 import { logToReactotron } from '@/services/monitoring/reactotron';
-import * as Haptics from 'expo-haptics';
+import { mediumImpact } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -21,7 +21,7 @@ export default function WelcomeScreen() {
   }, []);
 
   const handleGetStarted = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await mediumImpact();
     logToReactotron('Get Started button tapped');
     router.push('./onboarding');
   };

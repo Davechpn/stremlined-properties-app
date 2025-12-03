@@ -8,7 +8,7 @@
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';
@@ -159,7 +159,7 @@ export function PhotoUpload({
       const processed = await processImage(asset.uri);
       
       if (processed) {
-        await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+        await successFeedback();
         
         // Calculate approximate file size
         const fileSize = Math.round(processed.width * processed.height * 0.5); // Rough estimate
@@ -181,7 +181,7 @@ export function PhotoUpload({
     if (!hasPermission) return;
 
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await lightImpact();
       
       const result = await ImagePicker.launchCameraAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -193,7 +193,7 @@ export function PhotoUpload({
       await handleImageResult(result);
     } catch (error) {
       console.error('Error taking photo:', error);
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       Alert.alert('Error', 'Failed to take photo. Please try again.');
     }
   };
@@ -206,7 +206,7 @@ export function PhotoUpload({
     if (!hasPermission) return;
 
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await lightImpact();
       
       const result = await ImagePicker.launchImageLibraryAsync({
         mediaTypes: ImagePicker.MediaTypeOptions.Images,
@@ -218,7 +218,7 @@ export function PhotoUpload({
       await handleImageResult(result);
     } catch (error) {
       console.error('Error selecting photo:', error);
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       Alert.alert('Error', 'Failed to select photo. Please try again.');
     }
   };
@@ -236,7 +236,7 @@ export function PhotoUpload({
           text: 'Remove',
           style: 'destructive',
           onPress: async () => {
-            await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            await successFeedback();
             onPhotoRemoved?.();
           },
         },

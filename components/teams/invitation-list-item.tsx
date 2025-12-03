@@ -10,7 +10,7 @@ import { Icon } from '@/components/ui/icon';
 import { ContactType, Invitation, InvitationStatus } from '@/types/invitation';
 import { Role } from '@/types/organization';
 import { formatDistanceToNow } from 'date-fns';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { Alert, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { IconButton, Text, useTheme } from 'react-native-paper';
@@ -91,7 +91,7 @@ export function InvitationListItem({
 
   const handlePress = () => {
     if (!disabled && onPress) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      lightImpact();
       onPress(invitation);
     }
   };
@@ -106,13 +106,13 @@ export function InvitationListItem({
         {
           text: 'Cancel',
           style: 'cancel',
-          onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+          onPress: () => lightImpact(),
         },
         {
           text: 'Revoke',
           style: 'destructive',
           onPress: () => {
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+            mediumImpact();
             onRevoke!(invitation);
           },
         },

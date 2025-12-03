@@ -14,7 +14,7 @@ import { LoadingIndicator } from '@/components/ui/loading-indicator';
 import { useOrganizationDetails } from '@/hooks/use-organizations';
 import { formatRelativeTime } from '@/lib/utils/formatting';
 import { Role } from '@/types/organization';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, heavyImpact, successFeedback, errorFeedback, warningFeedback, selectionChanged } from '@/lib/utils/haptics';
 import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router';
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
@@ -38,7 +38,7 @@ export default function OrganizationDetailScreen() {
 
   // Handle settings navigation
   const handleSettingsPress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.push(`/organizations/${id}/settings` as any);
   };
 
@@ -58,7 +58,7 @@ export default function OrganizationDetailScreen() {
 
   // Handle back
   const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.back();
   };
 

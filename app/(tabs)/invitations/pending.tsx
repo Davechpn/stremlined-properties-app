@@ -14,7 +14,7 @@ import { useInvitationManagement } from '@/hooks/use-invitations';
 import { Invitation, InvitationStatus } from '@/types/invitation';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
@@ -62,13 +62,13 @@ export default function PendingInvitationsScreen() {
   // Handle refresh
   const handleRefresh = async () => {
     setRefreshing(true);
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
 
     try {
       await refetch();
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       logToReactotron('Invitations refresh error', { error });
     } finally {
       setRefreshing(false);

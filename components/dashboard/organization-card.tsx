@@ -8,7 +8,7 @@
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { OrganizationWithMember } from '@/types/organization';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';
@@ -59,12 +59,12 @@ export const OrganizationCard: React.FC<OrganizationCardProps> = ({
   }, [organization, isActive, onPress, onLongPress]);
 
   const handlePress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     onPress?.();
   };
 
   const handleLongPress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await mediumImpact();
     onLongPress?.();
   };
 

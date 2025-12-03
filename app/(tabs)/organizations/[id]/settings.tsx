@@ -12,7 +12,7 @@ import { useOrganizationDetails, useUpdateOrganization, useDeleteOrganization } 
 import { Role } from '@/types/organization';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, heavyImpact, successFeedback, errorFeedback, warningFeedback, selectionChanged } from '@/lib/utils/haptics';
 import { useLocalSearchParams, useRouter, useNavigation } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -41,7 +41,7 @@ export default function OrganizationSettingsScreen() {
 
   // Handle back
   const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.back();
   };
 
@@ -76,7 +76,7 @@ export default function OrganizationSettingsScreen() {
   // Handle save
   const handleSave = async () => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await lightImpact();
 
       logToReactotron('Updating organization', { id, formData });
 
@@ -93,7 +93,7 @@ export default function OrganizationSettingsScreen() {
         postalCode: formData.postalCode || undefined,
       });
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       Sentry.addBreadcrumb({
         category: 'organization',
@@ -113,7 +113,7 @@ export default function OrganizationSettingsScreen() {
         ]
       );
     } catch (error: any) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       logToReactotron('Organization update error', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -138,21 +138,21 @@ export default function OrganizationSettingsScreen() {
 
   // Handle delete
   const handleDelete = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     setDeleteDialogVisible(true);
   };
 
   const confirmDelete = async () => {
     try {
       setDeleteDialogVisible(false);
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+      await heavyImpact();
 
       logToReactotron('Deleting organization', { id });
 
       // Delete organization
       await deleteOrganization.mutateAsync();
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       Sentry.addBreadcrumb({
         category: 'organization',
@@ -172,7 +172,7 @@ export default function OrganizationSettingsScreen() {
         ]
       );
     } catch (error: any) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       logToReactotron('Organization deletion error', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -191,7 +191,7 @@ export default function OrganizationSettingsScreen() {
   };
 
   const cancelDelete = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     setDeleteDialogVisible(false);
   };
 

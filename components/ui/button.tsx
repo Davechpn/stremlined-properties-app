@@ -4,7 +4,7 @@
  * Wrapper around React Native Paper Button with haptic feedback
  */
 
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, heavyImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { Button as PaperButton, ButtonProps as PaperButtonProps } from 'react-native-paper';
 
@@ -26,13 +26,13 @@ export const Button: React.FC<ButtonProps> = ({
       // Trigger haptic feedback based on style
       switch (hapticStyle) {
         case 'light':
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          await lightImpact();
           break;
         case 'medium':
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+          await mediumImpact();
           break;
         case 'heavy':
-          await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+          await heavyImpact();
           break;
       }
     }

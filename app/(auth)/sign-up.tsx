@@ -1,5 +1,5 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -56,7 +56,7 @@ export default function SignUpScreen() {
 
       await signUp(data);
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       logAuthFlowToReactotron('Sign up successful', { email: data.email });
 
@@ -67,7 +67,7 @@ export default function SignUpScreen() {
       const errorMessage = getAuthErrorMessage(err);
       setError(errorMessage);
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       logAuthFlowToReactotron('Sign up failed', {
         error: errorMessage,

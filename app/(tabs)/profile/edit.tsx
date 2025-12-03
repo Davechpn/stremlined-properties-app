@@ -12,7 +12,7 @@ import { LoadingIndicator } from '@/components/ui/loading-indicator';
 import { useProfile, useUpdateProfile, useUploadProfilePhoto, useDeleteProfilePhoto } from '@/services/api/profile';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter, useNavigation } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
@@ -44,14 +44,14 @@ export default function EditProfileScreen() {
 
   // Handle cancel
   const handleCancel = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.back();
   };
 
   // Handle save
   const handleSave = async () => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await lightImpact();
 
       logToReactotron('Updating profile', { formData });
 
@@ -62,7 +62,7 @@ export default function EditProfileScreen() {
         phoneNumber: formData.phoneNumber || undefined,
       });
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       setSnackbarMessage('Profile updated successfully');
       setSnackbarVisible(true);
 
@@ -77,7 +77,7 @@ export default function EditProfileScreen() {
         router.back();
       }, 1000);
     } catch (error: any) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       logToReactotron('Profile update error', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -136,7 +136,7 @@ export default function EditProfileScreen() {
   // Handle photo selected
   const handlePhotoSelected = async (uri: string, fileInfo: { width: number; height: number; size: number }) => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await lightImpact();
 
       logToReactotron('Uploading profile photo', { uri, fileInfo });
 
@@ -147,7 +147,7 @@ export default function EditProfileScreen() {
         name: `profile-${Date.now()}.jpg`,
       });
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       setSnackbarMessage('Profile photo updated successfully');
       setSnackbarVisible(true);
 
@@ -158,7 +158,7 @@ export default function EditProfileScreen() {
         data: fileInfo,
       });
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       
       logToReactotron('Photo upload error', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -175,13 +175,13 @@ export default function EditProfileScreen() {
   // Handle photo removed
   const handlePhotoRemoved = async () => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await lightImpact();
 
       logToReactotron('Deleting profile photo', {});
 
       await deletePhoto.mutateAsync();
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       setSnackbarMessage('Profile photo removed successfully');
       setSnackbarVisible(true);
 
@@ -191,7 +191,7 @@ export default function EditProfileScreen() {
         level: 'info',
       });
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       
       logToReactotron('Photo delete error', {
         error: error instanceof Error ? error.message : 'Unknown error',

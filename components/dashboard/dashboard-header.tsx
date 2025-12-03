@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { useOfflineStatus } from '@/hooks/use-offline-status';
 import { User } from '@/types/auth';
 import { OrganizationWithMember, Role } from '@/types/organization';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { IconButton, Text, useTheme } from 'react-native-paper';
@@ -53,12 +53,12 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   const { isOffline } = useOfflineStatus();
 
   const handleSwitcherPress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     onOrganizationSwitcherPress?.();
   };
 
   const handleLogoutPress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    await mediumImpact();
     onLogoutPress?.();
   };
 

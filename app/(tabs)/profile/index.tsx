@@ -16,7 +16,7 @@ import { useOrganizations } from '@/hooks/use-organizations';
 import { useProfile } from '@/services/api/profile';
 import { AuthMethod } from '@/types/auth';
 import { Role } from '@/types/organization';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, heavyImpact, successFeedback, errorFeedback, warningFeedback, selectionChanged } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
@@ -41,13 +41,13 @@ export default function ProfileScreen() {
   // Pull to refresh
   const handleRefresh = async () => {
     setRefreshing(true);
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     
     try {
       await refetch();
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
     } finally {
       setRefreshing(false);
     }
@@ -55,19 +55,19 @@ export default function ProfileScreen() {
 
   // Handle edit profile
   const handleEditProfile = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.push('/profile/edit' as any);
   };
 
   // Handle settings
   const handleSettings = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.push('/profile/settings' as any);
   };
 
   // Handle sign out
   const handleSignOut = async () => {
-    await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    await successFeedback();
     await signOut();
   };
 
@@ -118,14 +118,14 @@ export default function ProfileScreen() {
 
   // Handle add authentication method
   const handleAddAuthMethod = (method: AuthMethod) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     // TODO: Navigate to add auth method flow
     console.log('Add auth method:', method);
   };
 
   // Handle remove authentication method
   const handleRemoveAuthMethod = (method: AuthMethod) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     // TODO: Show confirmation and remove auth method
     console.log('Remove auth method:', method);
   };

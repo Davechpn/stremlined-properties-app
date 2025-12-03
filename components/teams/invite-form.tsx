@@ -11,7 +11,7 @@ import { TextInput } from '@/components/ui/text-input';
 import { validateEmail, validatePhoneNumber } from '@/lib/utils/validation';
 import { ContactType } from '@/types/invitation';
 import { Role } from '@/types/organization';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Chip, HelperText, Text, useTheme } from 'react-native-paper';
@@ -100,7 +100,7 @@ export function InviteForm({
 
   // Handle contact type change
   const handleContactTypeChange = (type: ContactType) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     setContactType(type);
     setContact('');
     setContactError('');
@@ -117,7 +117,7 @@ export function InviteForm({
 
   // Handle role picker open
   const handleRolePickerOpen = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     setRolePickerVisible(true);
   };
 
@@ -125,7 +125,7 @@ export function InviteForm({
   const handleRoleSelect = (selectedRole: Role) => {
     setRole(selectedRole);
     setRolePickerVisible(false);
-    Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+    successFeedback();
   };
 
   // Handle form submission
@@ -134,12 +134,12 @@ export function InviteForm({
     const error = validateContact(contact, contactType);
     if (error) {
       setContactError(error);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      errorFeedback();
       return;
     }
 
     setIsSubmitting(true);
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    mediumImpact();
 
     try {
       const formData: InviteFormData = {
@@ -150,9 +150,9 @@ export function InviteForm({
       };
 
       await onSubmit(formData);
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      successFeedback();
     } catch (error) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      errorFeedback();
       throw error;
     } finally {
       setIsSubmitting(false);

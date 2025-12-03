@@ -14,7 +14,7 @@ import { useOrganizations } from '@/hooks/use-organizations';
 import { useSwitchOrganization } from '@/services/api/organizations';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
@@ -46,7 +46,7 @@ export default function OrganizationsScreen() {
 
   // Handle organization press - navigate to detail view
   const handleOrganizationPress = async (organizationId: string) => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     router.push(`/organizations/${organizationId}` as any);
   };
 
@@ -57,7 +57,7 @@ export default function OrganizationsScreen() {
     }
 
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      await mediumImpact();
       
       // Switch organization via API
       await switchOrgMutation.mutateAsync({ organizationId });
@@ -65,7 +65,7 @@ export default function OrganizationsScreen() {
       // Update local state
       setActiveOrganization(organizationId);
       
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       
       setSnackbarMessage('Organization switched successfully');
       setSnackbarVisible(true);
@@ -82,7 +82,7 @@ export default function OrganizationsScreen() {
         data: { organizationId },
       });
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       
       setSnackbarMessage('Failed to switch organization');
       setSnackbarVisible(true);
@@ -102,17 +102,17 @@ export default function OrganizationsScreen() {
   // Handle refresh
   const handleRefresh = async () => {
     setRefreshing(true);
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     
     try {
       await refetch();
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       
       logToReactotron('Organizations list refreshed', {
         organizationCount: organizations?.length || 0,
       });
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       
       logToReactotron('Organizations refresh error', {
         error: error instanceof Error ? error.message : 'Unknown error',

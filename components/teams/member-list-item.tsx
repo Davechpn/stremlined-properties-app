@@ -10,7 +10,7 @@ import { Badge } from '@/components/ui/badge';
 import { MemberWithUser } from '@/services/api/teams';
 import { Role } from '@/types/organization';
 import { formatDistanceToNow } from 'date-fns';
-import * as Haptics from 'expo-haptics';
+import { lightImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { List, Text, useTheme } from 'react-native-paper';
@@ -59,7 +59,7 @@ export function MemberListItem({
 
   const handlePress = () => {
     if (!disabled && onPress) {
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      lightImpact();
       onPress(member);
     }
   };

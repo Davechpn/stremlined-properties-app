@@ -14,7 +14,7 @@ import { clear as clearAsyncStorage } from '@/services/storage/async-storage';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import { AuthMethod } from '@/types/auth';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, heavyImpact, successFeedback, errorFeedback, warningFeedback, selectionChanged } from '@/lib/utils/haptics';
 import { useRouter, useNavigation } from 'expo-router';
 import React from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
@@ -45,13 +45,13 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              await lightImpact();
               
               logToReactotron('Clearing cache', {});
               
               await clearAsyncStorage();
 
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              await successFeedback();
 
               Sentry.addBreadcrumb({
                 category: 'settings',
@@ -61,7 +61,7 @@ export default function SettingsScreen() {
 
               Alert.alert('Success', 'Cache cleared successfully');
             } catch (error) {
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              await errorFeedback();
               
               logToReactotron('Clear cache error', {
                 error: error instanceof Error ? error.message : 'Unknown error',
@@ -91,7 +91,7 @@ export default function SettingsScreen() {
           style: 'destructive',
           onPress: async () => {
             try {
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+              await successFeedback();
               
               logToReactotron('User signed out from settings', {
                 userId: user?.id,
@@ -105,7 +105,7 @@ export default function SettingsScreen() {
 
               await signOut();
             } catch (error) {
-              await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+              await errorFeedback();
               
               logToReactotron('Sign out error', {
                 error: error instanceof Error ? error.message : 'Unknown error',
@@ -125,7 +125,7 @@ export default function SettingsScreen() {
 
   // Handle add authentication method
   const handleAddAuthMethod = (method: AuthMethod) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     
     logToReactotron('Add authentication method requested', { method });
 
@@ -148,7 +148,7 @@ export default function SettingsScreen() {
           text: 'Remove',
           style: 'destructive',
           onPress: async () => {
-            await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            await lightImpact();
             
             logToReactotron('Remove authentication method requested', { method });
 
@@ -271,7 +271,7 @@ export default function SettingsScreen() {
             left={(props) => <List.Icon {...props} icon="shield-account" />}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              lightImpact();
               // TODO: Navigate to privacy policy
               Alert.alert('Privacy Policy', 'Privacy policy will be available soon.');
             }}
@@ -283,7 +283,7 @@ export default function SettingsScreen() {
             left={(props) => <List.Icon {...props} icon="file-document" />}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              lightImpact();
               // TODO: Navigate to terms of service
               Alert.alert('Terms of Service', 'Terms of service will be available soon.');
             }}
@@ -308,7 +308,7 @@ export default function SettingsScreen() {
             left={(props) => <List.Icon {...props} icon="help-circle" />}
             right={(props) => <List.Icon {...props} icon="chevron-right" />}
             onPress={() => {
-              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+              lightImpact();
               // TODO: Navigate to help
               Alert.alert('Help & Support', 'Help & support will be available soon.');
             }}

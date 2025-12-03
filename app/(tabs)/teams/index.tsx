@@ -15,7 +15,7 @@ import { useTeamManagement } from '@/hooks/use-teams';
 import { MemberWithUser } from '@/services/api/teams';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';

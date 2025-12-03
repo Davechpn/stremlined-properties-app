@@ -1,5 +1,5 @@
 /**
- * Dashboard Home Screen
+ * Dashboard Screen
  * 
  * Adaptive personal dashboard that serves as the home screen.
  * Layout adapts based on user's organization membership:
@@ -12,11 +12,12 @@ import { DashboardHeader } from '@/components/dashboard/dashboard-header';
 import { OrganizationCard } from '@/components/dashboard/organization-card';
 import { QuickActions } from '@/components/dashboard/quick-actions';
 import { WelcomeCard } from '@/components/dashboard/welcome-card';
+import { OrganizationSwitcher } from '@/components/organizations/organization-switcher';
 import { ErrorMessage } from '@/components/ui/error-message';
 import {
-    SkeletonDashboardHeader,
-    SkeletonOrganizationCard,
-    SkeletonQuickActions,
+  SkeletonDashboardHeader,
+  SkeletonOrganizationCard,
+  SkeletonQuickActions,
 } from '@/components/ui/skeleton';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
@@ -27,15 +28,16 @@ import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
 import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { FAB, Text, useTheme } from 'react-native-paper';
 
-export default function HomeScreen() {
+export default function DashboardScreen() {
   const theme = useTheme();
   const router = useRouter();
   const [refreshing, setRefreshing] = useState(false);
   const [loadStartTime] = useState(Date.now());
+  const [switcherVisible, setSwitcherVisible] = useState(false);
 
   // Auth hook
   const { signOut } = useAuth();
@@ -197,16 +199,25 @@ export default function HomeScreen() {
 
   // Handle organization switcher
   const handleOrganizationSwitcher = () => {
-    // This will open a bottom sheet in a future task
-    // For now, just log
-    console.log('Open organization switcher');
+    lightImpact();
+    setSwitcherVisible(true);
+    
+    logToReactotron('Organization switcher opened', {
+      organizationCount: organizations?.length || 0,
+      activeOrgId: activeOrganizationId,
+    });
+  };
+
+  // Handle switcher dismiss
+  const handleSwitcherDismiss = () => {
+    setSwitcherVisible(false);
   };
 
   // Handle logout
   const handleLogout = async () => {
     try {
-      await signOut();
       await successFeedback();
+      await signOut();
       
       logToReactotron('User logged out', {
         userId: user?.id,
@@ -217,9 +228,6 @@ export default function HomeScreen() {
         message: 'User logged out',
         level: 'info',
       });
-
-      // Redirect to sign-in screen
-      router.replace('/(auth)/sign-in');
     } catch (error) {
       await errorFeedback();
       
@@ -255,9 +263,21 @@ export default function HomeScreen() {
 
     if (canInviteMembers) {
       actions.push({
-        label: 'Invite Team',
-        icon: 'account-plus',
-        onPress: () => console.log('Invite team member'),
+        label: 'Team',
+        icon: 'account-group',
+        onPress: () => {
+          lightImpact();
+          router.push('/teams' as any);
+        },
+      });
+
+      actions.push({
+        label: 'Invitations',
+        icon: 'email-outline',
+        onPress: () => {
+          lightImpact();
+          router.push('/invitations/pending' as any);
+        },
       });
     }
 
@@ -360,6 +380,12 @@ export default function HomeScreen() {
           onPress={handleCreateOrganization}
         />
       )}
+
+      {/* Organization Switcher Bottom Sheet */}
+      <OrganizationSwitcher
+        visible={switcherVisible}
+        onDismiss={handleSwitcherDismiss}
+      />
     </View>
   );
 }
@@ -379,7 +405,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   section: {
-    marginTop: 16,
+    padding: 16,
   },
   sectionTitle: {
     fontWeight: '600',

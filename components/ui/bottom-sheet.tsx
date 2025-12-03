@@ -5,7 +5,7 @@
  * Uses react-native-reanimated for 60fps performance.
  */
 
-import * as Haptics from 'expo-haptics';
+import { lightImpact } from '@/lib/utils/haptics';
 import React, { useCallback, useEffect } from 'react';
 import { Dimensions, Modal, Platform, Pressable, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -69,7 +69,7 @@ export const BottomSheet: React.FC<BottomSheetProps> = ({
 
   // Handle dismiss
   const handleDismiss = useCallback(() => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     onDismiss();
   }, [onDismiss]);
 

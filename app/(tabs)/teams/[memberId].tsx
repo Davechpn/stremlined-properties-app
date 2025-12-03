@@ -17,7 +17,7 @@ import { Role } from '@/types/organization';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
 import { formatDistanceToNow } from 'date-fns';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useLocalSearchParams, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { Alert, ScrollView, StyleSheet, View } from 'react-native';
@@ -48,13 +48,13 @@ export default function MemberDetailScreen() {
 
   // Handle back press
   const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.back();
   };
 
   // Handle change role
   const handleChangeRole = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     setRolePickerVisible(true);
   };
 
@@ -107,7 +107,7 @@ export default function MemberDetailScreen() {
         {
           text: 'Cancel',
           style: 'cancel',
-          onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light),
+          onPress: () => lightImpact(),
         },
         {
           text: 'Remove',

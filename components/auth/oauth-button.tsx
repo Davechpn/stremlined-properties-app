@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics';
+import { lightImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { Button } from 'react-native-paper';
@@ -25,7 +25,7 @@ export function OAuthButton({
   mode = 'outlined',
 }: OAuthButtonProps) {
   const handlePress = async () => {
-    await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    await lightImpact();
     onPress();
   };
 

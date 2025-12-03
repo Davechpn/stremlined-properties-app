@@ -7,7 +7,7 @@ import { logToReactotron } from '@/services/monitoring/reactotron';
 import { Role } from '@/types/organization';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
 import React from 'react';
@@ -43,7 +43,7 @@ function CustomDrawerContent(props: any) {
 
   const handleLogout = async () => {
     try {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       
       logToReactotron('User logged out from drawer', {
         userId: user?.id,
@@ -60,7 +60,7 @@ function CustomDrawerContent(props: any) {
       // Navigate to sign-in screen
       router.replace('/(auth)/sign-in');
     } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       
       logToReactotron('Logout error', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -97,7 +97,7 @@ function CustomDrawerContent(props: any) {
         icon={() => <IconSymbol size={24} name="house.fill" color={theme.colors.onSurface} />}
         onPress={() => {
           props.navigation.navigate('index');
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          lightImpact();
         }}
         labelStyle={{ color: theme.colors.onSurface }}
       />
@@ -107,7 +107,7 @@ function CustomDrawerContent(props: any) {
         icon={() => <IconSymbol size={24} name="building.2.fill" color={theme.colors.onSurface} />}
         onPress={() => {
           props.navigation.navigate('organizations');
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          lightImpact();
         }}
         labelStyle={{ color: theme.colors.onSurface }}
       />
@@ -117,7 +117,7 @@ function CustomDrawerContent(props: any) {
         icon={() => <IconSymbol size={24} name="person.fill" color={theme.colors.onSurface} />}
         onPress={() => {
           props.navigation.navigate('profile');
-          Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+          lightImpact();
         }}
         labelStyle={{ color: theme.colors.onSurface }}
       />
@@ -129,7 +129,7 @@ function CustomDrawerContent(props: any) {
           icon={() => <IconSymbol size={24} name="person.2.fill" color={theme.colors.onSurface} />}
           onPress={() => {
             router.push('/teams' as any);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            lightImpact();
           }}
           labelStyle={{ color: theme.colors.onSurface }}
         />
@@ -142,7 +142,7 @@ function CustomDrawerContent(props: any) {
           icon={() => <IconSymbol size={24} name="envelope.fill" color={theme.colors.onSurface} />}
           onPress={() => {
             router.push('/invitations/pending' as any);
-            Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+            lightImpact();
           }}
           labelStyle={{ color: theme.colors.onSurface }}
         />

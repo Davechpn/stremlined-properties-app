@@ -10,7 +10,7 @@ import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useCreateOrganization } from '@/hooks/use-organizations';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact, heavyImpact, successFeedback, errorFeedback, warningFeedback, selectionChanged } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -39,7 +39,7 @@ export default function CreateOrganizationScreen() {
   // Handle create
   const handleCreate = async () => {
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      await lightImpact();
 
       logToReactotron('Creating organization', { formData });
 
@@ -67,7 +67,7 @@ export default function CreateOrganizationScreen() {
         }
       }
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       Sentry.addBreadcrumb({
         category: 'organization',
@@ -87,7 +87,7 @@ export default function CreateOrganizationScreen() {
         ]
       );
     } catch (error: any) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       logToReactotron('Organization creation error', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -112,7 +112,7 @@ export default function CreateOrganizationScreen() {
 
   // Handle cancel
   const handleCancel = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     router.back();
   };
 

@@ -1,5 +1,5 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
-import * as Haptics from 'expo-haptics';
+import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
@@ -47,7 +47,7 @@ export default function SignInScreen() {
 
       await signIn(data);
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       logAuthFlowToReactotron('Sign in successful', { email: data.email });
 
@@ -58,7 +58,7 @@ export default function SignInScreen() {
       const errorMessage = getAuthErrorMessage(err);
       setError(errorMessage);
 
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       logAuthFlowToReactotron('Sign in failed', {
         error: errorMessage,
@@ -96,11 +96,11 @@ export default function SignInScreen() {
   const handleClearStorage = async () => {
     try {
       await clearSession();
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
       logAuthFlowToReactotron('Storage cleared manually', {});
       setError('Storage cleared! You can now sign in.');
     } catch (err) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
       setError('Failed to clear storage');
     }
   };

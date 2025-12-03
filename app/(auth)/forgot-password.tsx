@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics';
+import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';
@@ -30,9 +30,9 @@ export default function ForgotPasswordScreen() {
       setLoading(true);
       await forgotPassword({ email });
       setSuccess(true);
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
     } catch (err) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
     } finally {
       setLoading(false);
     }

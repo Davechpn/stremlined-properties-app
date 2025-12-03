@@ -8,7 +8,7 @@
 import { BottomSheet } from '@/components/ui/bottom-sheet';
 import { Icon } from '@/components/ui/icon';
 import { Role } from '@/types/organization';
-import * as Haptics from 'expo-haptics';
+import { lightImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Divider, Text, useTheme } from 'react-native-paper';
@@ -157,7 +157,7 @@ export function RolePicker({
   );
 
   const handleSelectRole = (role: Role) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     onSelect(role);
   };
 

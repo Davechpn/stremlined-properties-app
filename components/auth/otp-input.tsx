@@ -1,4 +1,4 @@
-import * as Haptics from 'expo-haptics';
+import { lightImpact, successFeedback } from '@/lib/utils/haptics';
 import React, { useEffect, useRef, useState } from 'react';
 import { Pressable, TextInput as RNTextInput, StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
@@ -40,7 +40,7 @@ export function OtpInput({
     onChangeText?.(otpString);
 
     if (otpString.length === length) {
-      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      successFeedback();
       onComplete(otpString);
     }
   }, [otp, length, onComplete, onChangeText]);
@@ -94,7 +94,7 @@ export function OtpInput({
   };
 
   const handleBoxPress = (index: number) => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+    lightImpact();
     inputRefs.current[index]?.focus();
   };
 

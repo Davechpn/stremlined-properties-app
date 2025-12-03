@@ -14,7 +14,7 @@ import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useOrganizations } from '@/hooks/use-organizations';
 import { formatRelativeTime } from '@/lib/utils/formatting';
 import { Role } from '@/types/organization';
-import * as Haptics from 'expo-haptics';
+import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import React, { useState } from 'react';
 import { FlatList, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Divider, Searchbar, Text, useTheme } from 'react-native-paper';
@@ -46,13 +46,13 @@ export const OrganizationSwitcher: React.FC<OrganizationSwitcherProps> = ({
   const handleSelectOrganization = async (organizationId: string) => {
     if (organizationId === activeOrganizationId) {
       // Already active, just close
-      Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+      lightImpact();
       onDismiss();
       return;
     }
 
     try {
-      await Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+      await mediumImpact();
       await switchOrganization(organizationId);
       onDismiss();
     } catch (error) {

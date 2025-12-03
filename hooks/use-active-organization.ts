@@ -8,7 +8,7 @@
 import { useSwitchOrganization } from '@/services/api/organizations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react-native';
-import * as Haptics from 'expo-haptics';
+import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useEffect, useState } from 'react';
 
 const ACTIVE_ORG_KEY = '@streamlined:active_org';
@@ -54,7 +54,7 @@ export const useActiveOrganization = () => {
       await AsyncStorage.setItem(ACTIVE_ORG_KEY, organizationId);
 
       // Haptic feedback for successful switch
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+      await successFeedback();
 
       Sentry.addBreadcrumb({
         category: 'organization',
@@ -64,7 +64,7 @@ export const useActiveOrganization = () => {
       });
     } catch (error) {
       // Haptic feedback for failed switch
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       Sentry.captureException(error, {
         tags: { context: 'switch-organization' },
