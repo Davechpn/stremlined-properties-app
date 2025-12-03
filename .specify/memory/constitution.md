@@ -153,6 +153,10 @@ The Streamlined Properties App MUST adhere to the following technology stack:
 - Expo Router (file-based routing)
 - Deep linking configured via expo-linking
 - Type-safe routes with experimental.typedRoutes enabled
+- Drawer navigator in app/(tabs)/ with Stack navigators for sub-sections
+- Navigation Pattern: Folders with _layout.tsx MUST use Stack navigator with headerShown: true for index screen and hamburger menu (DrawerActions.toggleDrawer)
+- Drawer screens MUST set headerShown: false to prevent double headers
+- Sub-screens (edit, settings, details) inherit Stack headers automatically
 
 **Development**:
 - ESLint with expo config

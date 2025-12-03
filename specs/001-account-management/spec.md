@@ -287,12 +287,12 @@ Users have different permissions within organizations based on their assigned ro
 - **FR-AUTH-015**: App MUST invalidate OTP codes after successful use or after 10-minute expiration
 - **FR-AUTH-016**: App MUST limit OTP requests to 5 per phone number per 15-minute period
 - **FR-AUTH-017**: App MUST allow maximum 3 verification attempts per OTP code
-- **FR-AUTH-013**: App MUST store authentication tokens securely using Expo SecureStore
-- **FR-AUTH-014**: App MUST allow users to authenticate using any linked authentication method
-- **FR-AUTH-015**: App MUST provide "remember me" functionality extending sessions to 7 days (default 1 hour)
-- **FR-AUTH-016**: App MUST support account lockout after 5 failed login attempts within 15 minutes
-- **FR-AUTH-017**: App MUST log all authentication events to Sentry for security monitoring
-- **FR-AUTH-018**: App MUST log all authentication flows to Reactotron for development debugging
+- **FR-AUTH-018**: App MUST store authentication tokens securely using Expo SecureStore
+- **FR-AUTH-019**: App MUST allow users to authenticate using any linked authentication method
+- **FR-AUTH-020**: App MUST provide "remember me" functionality extending sessions to 7 days (default 1 hour)
+- **FR-AUTH-021**: App MUST support account lockout after 5 failed login attempts within 15 minutes
+- **FR-AUTH-022**: App MUST log all authentication events to Sentry for security monitoring
+- **FR-AUTH-023**: App MUST log all authentication flows to Reactotron for development debugging
 
 #### Profile Management UI (FR-PROFILE-UI)
 - **FR-PROFILE-UI-001**: App MUST provide profile screen accessible from dashboard header/menu

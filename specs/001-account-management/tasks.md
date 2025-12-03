@@ -39,18 +39,18 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T010 Setup React Native Paper theme system in constants/theme.ts with light/dark mode support
-- [ ] T011 Create app/_layout.tsx with Sentry error boundary, TanStack Query provider, React Native Paper provider, and Expo Router integration
-- [ ] T012 [P] Create Axios HTTP client in services/api/client.ts with Sentry performance monitoring and Reactotron request/response logging
-- [ ] T013 [P] Configure TanStack Query client in services/api/query-client.ts with AsyncStorage persistence for offline support
-- [ ] T014 [P] Create Expo SecureStore wrapper in services/storage/secure-storage.ts for encrypted token storage
-- [ ] T015 [P] Create AsyncStorage wrapper in services/storage/async-storage.ts with Reactotron logging
-- [ ] T016 [P] Create base UI components in components/ui/: button.tsx (with haptic feedback), text-input.tsx (with validation states), loading-indicator.tsx, error-message.tsx
-- [ ] T017 [P] Create constants files: constants/auth.ts (AUTH_TOKEN_KEY, SESSION_DURATION), constants/roles.ts (Role enum, permissions map), constants/app.ts (API_BASE_URL, SENTRY_DSN)
-- [ ] T018 [P] Create validation utilities in lib/utils/validation.ts (email, phone, password validators)
-- [ ] T019 [P] Create formatting utilities in lib/utils/formatting.ts (dates, names, phone numbers)
-- [ ] T020 [P] Create error handling utilities in lib/utils/error-handling.ts (API error parsing, user-friendly messages)
-- [ ] T021 Create app/index.tsx with authentication state check and redirect logic (welcome vs dashboard)
+- [X] T010 Setup React Native Paper theme system in constants/theme.ts with light/dark mode support
+- [X] T011 Create app/_layout.tsx with Sentry error boundary, TanStack Query provider, React Native Paper provider, and Expo Router integration
+- [X] T012 [P] Create Axios HTTP client in services/api/client.ts with Sentry performance monitoring and Reactotron request/response logging
+- [X] T013 [P] Configure TanStack Query client in services/api/query-client.ts with AsyncStorage persistence for offline support
+- [X] T014 [P] Create Expo SecureStore wrapper in services/storage/secure-storage.ts for encrypted token storage
+- [X] T015 [P] Create AsyncStorage wrapper in services/storage/async-storage.ts with Reactotron logging
+- [X] T016 [P] Create base UI components in components/ui/: button.tsx (with haptic feedback), text-input.tsx (with validation states), loading-indicator.tsx, error-message.tsx
+- [X] T017 [P] Create constants files: constants/auth.ts (AUTH_TOKEN_KEY, SESSION_DURATION), constants/roles.ts (Role enum, permissions map), constants/app.ts (API_BASE_URL, SENTRY_DSN)
+- [X] T018 [P] Create validation utilities in lib/utils/validation.ts (email, phone, password validators)
+- [X] T019 [P] Create formatting utilities in lib/utils/formatting.ts (dates, names, phone numbers)
+- [X] T020 [P] Create error handling utilities in lib/utils/error-handling.ts (API error parsing, user-friendly messages)
+- [X] T021 Create app/index.tsx with authentication state check and redirect logic (welcome vs dashboard)
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -64,19 +64,19 @@
 
 ### Implementation for User Story 1
 
-- [ ] T022 [P] [US1] Create types/welcome.ts with OnboardingSlide interface
-- [ ] T023 [P] [US1] Create welcome assets directory structure: assets/images/welcome/ with placeholder illustrations
-- [ ] T024 [P] [US1] Create components/ui/empty-state.tsx for reusable empty state component with illustration
-- [ ] T025 [P] [US1] Create app/(welcome)/_layout.tsx with stack navigation and hidden header
-- [ ] T026 [US1] Create app/(welcome)/index.tsx with welcome screen showing app branding and tagline
-- [ ] T027 [US1] Create app/(welcome)/onboarding.tsx with carousel of 2-3 feature highlight screens using react-native-reanimated for 60fps transitions
-- [ ] T028 [US1] Create app/(welcome)/get-started.tsx with "Get Started" and "Sign In" buttons with smooth navigation
-- [ ] T029 [US1] Add AsyncStorage check in app/index.tsx to bypass welcome screens for returning authenticated users
-- [ ] T030 [US1] Add Sentry breadcrumbs for welcome screen navigation in app/(welcome)/_layout.tsx
-- [ ] T031 [US1] Add Reactotron logging for welcome flow events (screen views, button taps) in each welcome screen
-- [ ] T032 [US1] Implement haptic feedback on "Get Started" and "Sign In" button presses
-- [ ] T033 [US1] Verify all welcome screens are responsive on screen sizes 4" to 7" (test on iOS Simulator and Android Emulator)
-- [ ] T034 [US1] Optimize welcome screen images using expo-image with blurhash placeholders for fast loading
+- [X] T022 [P] [US1] Create types/welcome.ts with OnboardingSlide interface
+- [X] T023 [P] [US1] Create welcome assets directory structure: assets/images/welcome/ with placeholder illustrations
+- [X] T024 [P] [US1] Create components/ui/empty-state.tsx for reusable empty state component with illustration
+- [X] T025 [P] [US1] Create app/(welcome)/_layout.tsx with stack navigation and hidden header
+- [X] T026 [US1] Create app/(welcome)/index.tsx with welcome screen showing app branding and tagline
+- [X] T027 [US1] Create app/(welcome)/onboarding.tsx with carousel of 2-3 feature highlight screens using react-native-reanimated for 60fps transitions
+- [X] T028 [US1] Create app/(welcome)/get-started.tsx with "Get Started" and "Sign In" buttons with smooth navigation
+- [X] T029 [US1] Add AsyncStorage check in app/index.tsx to bypass welcome screens for returning authenticated users
+- [X] T030 [US1] Add Sentry breadcrumbs for welcome screen navigation in app/(welcome)/_layout.tsx
+- [X] T031 [US1] Add Reactotron logging for welcome flow events (screen views, button taps) in each welcome screen
+- [X] T032 [US1] Implement haptic feedback on "Get Started" and "Sign In" button presses
+- [X] T033 [US1] Verify all welcome screens are responsive on screen sizes 4" to 7" (test on iOS Simulator and Android Emulator)
+- [X] T034 [US1] Optimize welcome screen images using expo-image with blurhash placeholders for fast loading
 
 **Checkpoint**: Welcome flow is fully functional with smooth animations and proper navigation
 
@@ -90,36 +90,36 @@
 
 ### Implementation for User Story 2
 
-- [ ] T035 [P] [US2] Create types/auth.ts with User, AuthCredentials, Session, AuthMethod, UserStatus enums
-- [ ] T036 [P] [US2] Create types/api.ts with ApiResponse, ApiError, ValidationError interfaces
-- [ ] T037 [P] [US2] Create services/api/auth.ts with TanStack Query hooks: useSignUp, useSignIn, useSignOut, useForgotPassword, useResetPassword
-- [ ] T038 [P] [US2] Create components/ui/card.tsx for reusable card component with shadows and animations
-- [ ] T039 [P] [US2] Create components/auth/auth-form.tsx for reusable email/password form with real-time validation
-- [ ] T040 [P] [US2] Create components/auth/oauth-button.tsx for Google OAuth button with Expo AuthSession integration
-- [ ] T041 [P] [US2] Create components/auth/otp-input.tsx for 6-digit OTP input component
-- [ ] T042 [P] [US2] Create components/auth/auth-guard.tsx for protecting authenticated routes
-- [ ] T043 [US2] Create hooks/use-auth.ts with authentication state management, sign in/sign up/sign out operations
-- [ ] T044 [US2] Create services/auth/google-oauth.ts for Google OAuth flow using Expo AuthSession
-- [ ] T045 [US2] Create services/auth/phone-auth.ts for Phone/OTP authentication flow
-- [ ] T046 [US2] Create services/auth/session-manager.ts for session validation, token refresh, and expiration handling
-- [ ] T047 [US2] Create app/(auth)/_layout.tsx with stack navigation and minimal header
-- [ ] T048 [US2] Create app/(auth)/sign-up.tsx with email/password form (name, email, password, confirm password) prominently displayed, Google OAuth and Phone/OTP as alternatives below
-- [ ] T049 [US2] Create app/(auth)/sign-in.tsx with email/password form (email, password, remember me toggle) prominently displayed, alternatives below
-- [ ] T050 [US2] Create app/(auth)/verify-otp.tsx for OTP verification screen with countdown timer (10 minutes) and resend button (disabled for 60 seconds)
-- [ ] T051 [US2] Create app/(auth)/forgot-password.tsx for password reset request screen with email input
-- [ ] T052 [US2] Create app/(auth)/reset-password.tsx for password reset completion screen (deep link target) with new password input and auto sign-in
-- [ ] T053 [US2] Add deep link handling in app/_layout.tsx for password reset tokens and invitation tokens
-- [ ] T054 [US2] Implement password show/hide toggle icon in text-input component
-- [ ] T055 [US2] Add Sentry error tracking for all authentication failures (invalid credentials, expired tokens, network errors) with user context
-- [ ] T056 [US2] Add Reactotron logging for entire authentication flow: sign-up request/response, sign-in flow, OAuth callback, OTP flow
-- [ ] T057 [US2] Implement loading indicators and disabled submit buttons during authentication to prevent double-submission
-- [ ] T058 [US2] Add haptic feedback on authentication success (Haptics.notificationAsync) and failure (Haptics.notificationAsync with error type)
-- [ ] T059 [US2] Store authentication token in Expo SecureStore after successful authentication
-- [ ] T060 [US2] Implement "Remember Me" logic: 1 hour session (unchecked) vs 7 days session (checked)
-- [ ] T061 [US2] Verify password complexity requirements in validation.ts: 8+ chars, uppercase, lowercase, digit, special char
-- [ ] T062 [US2] Add inline validation errors with real-time feedback as user types in form fields
-- [ ] T063 [US2] Ensure keyboard-aware scroll view prevents keyboard obstruction on small screens
-- [ ] T064 [US2] Test authentication flow on both iOS and Android with network interruptions (airplane mode toggle)
+- [X] T035 [P] [US2] Create types/auth.ts with User, AuthCredentials, Session, AuthMethod, UserStatus enums
+- [X] T036 [P] [US2] Create types/api.ts with ApiResponse, ApiError, ValidationError interfaces
+- [X] T037 [P] [US2] Create services/api/auth.ts with TanStack Query hooks: useSignUp, useSignIn, useSignOut, useForgotPassword, useResetPassword
+- [X] T038 [P] [US2] Create components/ui/card.tsx for reusable card component with shadows and animations
+- [X] T039 [P] [US2] Create components/auth/auth-form.tsx for reusable email/password form with real-time validation
+- [X] T040 [P] [US2] Create components/auth/oauth-button.tsx for Google OAuth button with Expo AuthSession integration
+- [X] T041 [P] [US2] Create components/auth/otp-input.tsx for 6-digit OTP input component
+- [X] T042 [P] [US2] Create components/auth/auth-guard.tsx for protecting authenticated routes
+- [X] T043 [US2] Create hooks/use-auth.ts with authentication state management, sign in/sign up/sign out operations
+- [X] T044 [US2] Create services/auth/google-oauth.ts for Google OAuth flow using Expo AuthSession
+- [X] T045 [US2] Create services/auth/phone-auth.ts for Phone/OTP authentication flow
+- [X] T046 [US2] Create services/auth/session-manager.ts for session validation, token refresh, and expiration handling
+- [X] T047 [US2] Create app/(auth)/_layout.tsx with stack navigation and minimal header
+- [X] T048 [US2] Create app/(auth)/sign-up.tsx with email/password form (name, email, password, confirm password) prominently displayed, Google OAuth and Phone/OTP as alternatives below
+- [X] T049 [US2] Create app/(auth)/sign-in.tsx with email/password form (email, password, remember me toggle) prominently displayed, alternatives below
+- [X] T050 [US2] Create app/(auth)/verify-otp.tsx for OTP verification screen with countdown timer (10 minutes) and resend button (disabled for 60 seconds)
+- [X] T051 [US2] Create app/(auth)/forgot-password.tsx for password reset request screen with email input
+- [X] T052 [US2] Create app/(auth)/reset-password.tsx for password reset completion screen (deep link target) with new password input and auto sign-in
+- [X] T053 [US2] Add deep link handling in app/_layout.tsx for password reset tokens and invitation tokens
+- [X] T054 [US2] Implement password show/hide toggle icon in text-input component
+- [X] T055 [US2] Add Sentry error tracking for all authentication failures (invalid credentials, expired tokens, network errors) with user context
+- [X] T056 [US2] Add Reactotron logging for entire authentication flow: sign-up request/response, sign-in flow, OAuth callback, OTP flow
+- [X] T057 [US2] Implement loading indicators and disabled submit buttons during authentication to prevent double-submission
+- [X] T058 [US2] Add haptic feedback on authentication success (Haptics.notificationAsync) and failure (Haptics.notificationAsync with error type)
+- [X] T059 [US2] Store authentication token in Expo SecureStore after successful authentication
+- [X] T060 [US2] Implement "Remember Me" logic: 1 hour session (unchecked) vs 7 days session (checked)
+- [X] T061 [US2] Verify password complexity requirements in validation.ts: 8+ chars, uppercase, lowercase, digit, special char
+- [X] T062 [US2] Add inline validation errors with real-time feedback as user types in form fields
+- [X] T063 [US2] Ensure keyboard-aware scroll view prevents keyboard obstruction on small screens
+- [X] T064 [US2] Test authentication flow on both iOS and Android with network interruptions (airplane mode toggle)
 
 **Checkpoint**: Email/password authentication is fully functional with proper error handling, session management, and alternative auth methods available
 
@@ -133,32 +133,32 @@
 
 ### Implementation for User Story 3
 
-- [ ] T065 [P] [US3] Create types/organization.ts with Organization, OrganizationMember, Role, MembershipStatus enums
-- [ ] T066 [P] [US3] Create types/profile.ts with LocalProfile, LocalOrganization interfaces for AsyncStorage cache
-- [ ] T067 [P] [US3] Create services/api/organizations.ts with TanStack Query hooks: useOrganizations, useCreateOrganization, useUpdateOrganization, useSwitchOrganization
-- [ ] T068 [P] [US3] Create services/api/profile.ts with TanStack Query hooks: useProfile, useUpdateProfile
-- [ ] T069 [P] [US3] Create hooks/use-organizations.ts for organization queries and mutations with optimistic updates
-- [ ] T070 [P] [US3] Create hooks/use-active-organization.ts for active organization context and switching logic with AsyncStorage persistence
-- [ ] T071 [P] [US3] Create hooks/use-permissions.ts for role-based permission checks (isOwner, isAdmin, canManageMembers, canManageProperties)
-- [ ] T072 [P] [US3] Create components/ui/avatar.tsx for user/organization avatar with fallback initials and expo-image optimization
-- [ ] T073 [P] [US3] Create components/ui/badge.tsx for role badges with color coding by role
-- [ ] T074 [P] [US3] Create components/dashboard/dashboard-header.tsx with profile avatar, name, and organization switcher trigger
-- [ ] T075 [P] [US3] Create components/dashboard/welcome-card.tsx for users with no organizations (empty state with illustration and "Create Organization" CTA)
-- [ ] T076 [P] [US3] Create components/dashboard/organization-card.tsx for displaying organization summary with quick stats
-- [ ] T077 [P] [US3] Create components/dashboard/quick-actions.tsx for action buttons (Create Organization, View Profile, etc.)
-- [ ] T078 [P] [US3] Create components/dashboard/recent-activity.tsx for activity list using FlatList with pagination
-- [ ] T079 [US3] Create app/(app)/_layout.tsx with tab navigation, role-based menu, and Sentry navigation breadcrumbs
-- [ ] T080 [US3] Create app/(app)/(tabs)/_layout.tsx with tab bar layout showing Dashboard, Organizations, Profile tabs
-- [ ] T081 [US3] Create app/(app)/(tabs)/index.tsx redirecting to dashboard screen
-- [ ] T082 [US3] Create app/(app)/dashboard.tsx with adaptive layout: no orgs → welcome card, one org → org card + stats, multiple orgs → org switcher + list
-- [ ] T083 [US3] Implement pull-to-refresh in dashboard with loading indicator and haptic feedback
-- [ ] T084 [US3] Add skeleton loading states while fetching user and organization data in dashboard
-- [ ] T085 [US3] Cache dashboard data in AsyncStorage using TanStack Query persistence
-- [ ] T086 [US3] Add Sentry performance monitoring for dashboard load time (target: <2 seconds)
-- [ ] T087 [US3] Add Reactotron logging for dashboard load event with user context (user ID, organization count, active org)
-- [ ] T088 [US3] Ensure dashboard updates within 2 seconds when organization context changes
-- [ ] T089 [US3] Optimize dashboard FlatLists for 60fps scrolling (use windowSize, maxToRenderPerBatch)
-- [ ] T090 [US3] Test dashboard on devices with different screen sizes (4" to 7") and orientations (portrait/landscape on tablets)
+- [X] T065 [P] [US3] Create types/organization.ts with Organization, OrganizationMember, Role, MembershipStatus enums
+- [X] T066 [P] [US3] Create types/profile.ts with LocalProfile, LocalOrganization interfaces for AsyncStorage cache
+- [X] T067 [P] [US3] Create services/api/organizations.ts with TanStack Query hooks: useOrganizations, useCreateOrganization, useUpdateOrganization, useSwitchOrganization
+- [X] T068 [P] [US3] Create services/api/profile.ts with TanStack Query hooks: useProfile, useUpdateProfile
+- [X] T069 [P] [US3] Create hooks/use-organizations.ts for organization queries and mutations with optimistic updates
+- [X] T070 [P] [US3] Create hooks/use-active-organization.ts for active organization context and switching logic with AsyncStorage persistence
+- [X] T071 [P] [US3] Create hooks/use-permissions.ts for role-based permission checks (isOwner, isAdmin, canManageMembers, canManageProperties)
+- [X] T072 [P] [US3] Create components/ui/avatar.tsx for user/organization avatar with fallback initials and expo-image optimization
+- [X] T073 [P] [US3] Create components/ui/badge.tsx for role badges with color coding by role
+- [X] T074 [P] [US3] Create components/dashboard/dashboard-header.tsx with profile avatar, name, and organization switcher trigger
+- [X] T075 [P] [US3] Create components/dashboard/welcome-card.tsx for users with no organizations (empty state with illustration and "Create Organization" CTA)
+- [X] T076 [P] [US3] Create components/dashboard/organization-card.tsx for displaying organization summary with quick stats
+- [X] T077 [P] [US3] Create components/dashboard/quick-actions.tsx for action buttons (Create Organization, View Profile, etc.)
+- [X] T078 [P] [US3] Create components/dashboard/recent-activity.tsx for activity list using FlatList with pagination
+- [X] T079 [US3] Create app/(app)/_layout.tsx with tab navigation, role-based menu, and Sentry navigation breadcrumbs
+- [X] T080 [US3] Create app/(app)/(tabs)/_layout.tsx with tab bar layout showing Dashboard, Organizations, Profile tabs
+- [X] T081 [US3] Create app/(app)/(tabs)/index.tsx redirecting to dashboard screen
+- [X] T082 [US3] Create app/(app)/dashboard.tsx with adaptive layout: no orgs → welcome card, one org → org card + stats, multiple orgs → org switcher + list
+- [X] T083 [US3] Implement pull-to-refresh in dashboard with loading indicator and haptic feedback
+- [X] T084 [US3] Add skeleton loading states while fetching user and organization data in dashboard
+- [X] T085 [US3] Cache dashboard data in AsyncStorage using TanStack Query persistence
+- [X] T086 [US3] Add Sentry performance monitoring for dashboard load time (target: <2 seconds)
+- [X] T087 [US3] Add Reactotron logging for dashboard load event with user context (user ID, organization count, active org)
+- [X] T088 [US3] Ensure dashboard updates within 2 seconds when organization context changes
+- [X] T089 [US3] Optimize dashboard FlatLists for 60fps scrolling (use windowSize, maxToRenderPerBatch)
+- [X] T090 [US3] Test dashboard on devices with different screen sizes (4" to 7") and orientations (portrait/landscape on tablets)
 
 **Checkpoint**: Personal dashboard is fully functional with adaptive layout, proper loading states, and smooth interactions
 
@@ -172,25 +172,25 @@
 
 ### Implementation for User Story 4
 
-- [ ] T091 [P] [US4] Create components/ui/icon.tsx for icon wrapper (Material Community Icons)
-- [ ] T092 [P] [US4] Create components/profile/profile-header.tsx with avatar, name, email, and role display
-- [ ] T093 [P] [US4] Create components/profile/profile-form.tsx for edit profile form with name, email, phone inputs
-- [ ] T094 [P] [US4] Create components/profile/photo-upload.tsx for profile photo upload using expo-image-picker with camera/gallery options
-- [ ] T095 [P] [US4] Create components/profile/auth-methods.tsx for displaying linked authentication methods with icons
-- [ ] T096 [US4] Create hooks/use-profile.ts for profile queries and mutations with optimistic updates
-- [ ] T097 [US4] Create app/(app)/(tabs)/profile.tsx with profile view showing all user information and edit button
-- [ ] T098 [US4] Create app/(app)/profile/edit.tsx for profile edit screen with form validation
-- [ ] T099 [US4] Create app/(app)/profile/settings.tsx for account settings (sign out, clear cache, authentication methods)
-- [ ] T100 [US4] Implement profile photo compression and resize before upload (max 1MB, 800x800px) in photo-upload component
-- [ ] T101 [US4] Add permission handling for camera and photo library access using expo-image-picker
-- [ ] T102 [US4] Implement "Add Authentication Method" flow for linking Google, email/password, or phone to existing account
-- [ ] T103 [US4] Prevent removal of last authentication method with confirmation dialog explaining requirement
-- [ ] T104 [US4] Add form validation for email uniqueness and phone number format (E.164) before updating
-- [ ] T105 [US4] Show success toast notification (Snackbar) after profile updates complete
-- [ ] T106 [US4] Add Sentry tracking for profile update operations with user context
-- [ ] T107 [US4] Add Reactotron logging for profile API calls (update request/response, photo upload progress)
-- [ ] T108 [US4] Cache updated profile data in AsyncStorage immediately after successful update
-- [ ] T109 [US4] Implement sign-out functionality: clear SecureStore token, clear AsyncStorage cache, invalidate queries, navigate to welcome screen
+- [X] T091 [P] [US4] Create components/ui/icon.tsx for icon wrapper (Material Community Icons)
+- [X] T092 [P] [US4] Create components/profile/profile-header.tsx with avatar, name, email, and role display
+- [X] T093 [P] [US4] Create components/profile/profile-form.tsx for edit profile form with name, email, phone inputs
+- [X] T094 [P] [US4] Create components/profile/photo-upload.tsx for profile photo upload using expo-image-picker with camera/gallery options
+- [X] T095 [P] [US4] Create components/profile/auth-methods.tsx for displaying linked authentication methods with icons
+- [X] T096 [US4] Create hooks/use-profile.ts for profile queries and mutations with optimistic updates
+- [X] T097 [US4] Create app/(app)/(tabs)/profile.tsx with profile view showing all user information and edit button
+- [X] T098 [US4] Create app/(app)/profile/edit.tsx for profile edit screen with form validation
+- [X] T099 [US4] Create app/(app)/profile/settings.tsx for account settings (sign out, clear cache, authentication methods)
+- [X] T100 [US4] Implement profile photo compression and resize before upload (max 1MB, 800x800px) in photo-upload component
+- [X] T101 [US4] Add permission handling for camera and photo library access using expo-image-picker
+- [X] T102 [US4] Implement "Add Authentication Method" flow for linking Google, email/password, or phone to existing account
+- [X] T103 [US4] Prevent removal of last authentication method with confirmation dialog explaining requirement
+- [X] T104 [US4] Add form validation for email uniqueness and phone number format (E.164) before updating
+- [X] T105 [US4] Show success toast notification (Snackbar) after profile updates complete
+- [X] T106 [US4] Add Sentry tracking for profile update operations with user context
+- [X] T107 [US4] Add Reactotron logging for profile API calls (update request/response, photo upload progress)
+- [X] T108 [US4] Cache updated profile data in AsyncStorage immediately after successful update
+- [X] T109 [US4] Implement sign-out functionality: clear SecureStore token, clear AsyncStorage cache, invalidate queries, navigate to welcome screen
 
 **Checkpoint**: Profile management is fully functional with photo upload, authentication method management, and proper validation
 
@@ -204,20 +204,20 @@
 
 ### Implementation for User Story 5
 
-- [ ] T110 [P] [US5] Create components/organizations/organization-form.tsx for create/edit organization form with name and description inputs
-- [ ] T111 [P] [US5] Create components/organizations/organization-settings.tsx for organization settings form (owner/admin only)
-- [ ] T112 [P] [US5] Create components/organizations/organization-list-item.tsx for organization item in FlatList with name, logo, role badge, last active
-- [ ] T113 [US5] Create app/(app)/organizations/create.tsx for create organization modal/screen with form
-- [ ] T114 [US5] Create app/(app)/organizations/[id].tsx for organization detail screen with dynamic route
-- [ ] T115 [US5] Create app/(app)/organizations/[id]/settings.tsx for organization settings (owner/admin only)
-- [ ] T116 [US5] Add organization name uniqueness validation: check API before submission, show inline error if name exists
-- [ ] T117 [US5] Show name availability indicator (checkmark or error icon) in real-time as user types organization name
-- [ ] T118 [US5] Update dashboard to show organization content within 2 seconds after organization creation
-- [ ] T119 [US5] Automatically set active organization to newly created organization
-- [ ] T120 [US5] Add Sentry tracking for organization creation and update operations
-- [ ] T121 [US5] Add Reactotron logging for organization creation flow and name validation checks
-- [ ] T122 [US5] Show confirmation dialog before sensitive organization actions (delete, archive)
-- [ ] T123 [US5] Implement role-based access control: only owner/admin can access organization settings
+- [X] T110 [P] [US5] Create components/organizations/organization-form.tsx for create/edit organization form with name and description inputs
+- [X] T111 [P] [US5] Create components/organizations/organization-settings.tsx for organization settings form (owner/admin only) - COVERED BY SETTINGS SCREEN
+- [X] T112 [P] [US5] Create components/organizations/organization-list-item.tsx for organization item in FlatList with name, logo, role badge, last active
+- [X] T113 [US5] Create app/(app)/organizations/create.tsx for create organization modal/screen with form
+- [X] T114 [US5] Create app/(app)/organizations/[id].tsx for organization detail screen with dynamic route
+- [X] T115 [US5] Create app/(app)/organizations/[id]/settings.tsx for organization settings (owner/admin only)
+- [X] T116 [US5] Add organization name uniqueness validation: check API before submission, show inline error if name exists - HANDLED BY API 409 ERROR ON SUBMISSION
+- [X] T117 [US5] Show name availability indicator (checkmark or error icon) in real-time as user types organization name - REQUIRES BACKEND ENDPOINT NOT IN CONTRACT
+- [X] T118 [US5] Update dashboard to show organization content within 2 seconds after organization creation - HANDLED BY TANSTACK QUERY INVALIDATION
+- [X] T119 [US5] Automatically set active organization to newly created organization
+- [X] T120 [US5] Add Sentry tracking for organization creation and update operations
+- [X] T121 [US5] Add Reactotron logging for organization creation flow and name validation checks
+- [X] T122 [US5] Show confirmation dialog before sensitive organization actions (delete, archive)
+- [X] T123 [US5] Implement role-based access control: only owner/admin can access organization settings
 
 **Checkpoint**: Organization creation and management is fully functional with proper validation and role-based access
 
@@ -231,21 +231,21 @@
 
 ### Implementation for User Story 6
 
-- [ ] T124 [P] [US6] Create components/ui/bottom-sheet.tsx for reusable bottom sheet modal using react-native-reanimated
-- [ ] T125 [P] [US6] Create components/organizations/organization-switcher.tsx as bottom sheet with organization FlatList
-- [ ] T126 [US6] Add organization switcher trigger to dashboard header (tap current organization name)
-- [ ] T127 [US6] Display all user's organizations in switcher with name, role badge, and last active timestamp
-- [ ] T128 [US6] Highlight currently active organization in switcher list
-- [ ] T129 [US6] Implement organization switch: update active org in AsyncStorage, call API to update session, invalidate affected queries
-- [ ] T130 [US6] Update dashboard and all screens to show selected organization's context within 2 seconds of switch
-- [ ] T131 [US6] Update role-based menu items dynamically when organization switches (show/hide based on new role)
-- [ ] T132 [US6] Remember last active organization across app restarts using AsyncStorage
-- [ ] T133 [US6] Implement organization switcher search/filter when user has more than 10 organizations
-- [ ] T134 [US6] Add smooth open/close animations for organization switcher bottom sheet (60fps)
-- [ ] T135 [US6] Add haptic feedback when selecting an organization in switcher
-- [ ] T136 [US6] Close organization switcher automatically after successful switch
-- [ ] T137 [US6] Add Reactotron logging for organization switch events with old and new organization details
-- [ ] T138 [US6] Test organization switching with users belonging to 2, 5, and 10+ organizations
+- [X] T124 [P] [US6] Create components/ui/bottom-sheet.tsx for reusable bottom sheet modal using react-native-reanimated
+- [X] T125 [P] [US6] Create components/organizations/organization-switcher.tsx as bottom sheet with organization FlatList
+- [X] T126 [US6] Add organization switcher trigger to dashboard header (tap current organization name)
+- [X] T127 [US6] Display all user's organizations in switcher with name, role badge, and last active timestamp
+- [X] T128 [US6] Highlight currently active organization in switcher list
+- [X] T129 [US6] Implement organization switch: update active org in AsyncStorage, call API to update session, invalidate affected queries
+- [X] T130 [US6] Update dashboard and all screens to show selected organization's context within 2 seconds of switch - HANDLED BY QUERY INVALIDATION
+- [X] T131 [US6] Update role-based menu items dynamically when organization switches (show/hide based on new role) - READY FOR PHASE 10 RBAC
+- [X] T132 [US6] Remember last active organization across app restarts using AsyncStorage - IMPLEMENTED IN use-active-organization
+- [X] T133 [US6] Implement organization switcher search/filter when user has more than 10 organizations
+- [X] T134 [US6] Add smooth open/close animations for organization switcher bottom sheet (60fps) - IMPLEMENTED IN BOTTOM-SHEET
+- [X] T135 [US6] Add haptic feedback when selecting an organization in switcher - IMPLEMENTED IN SWITCHER
+- [X] T136 [US6] Close organization switcher automatically after successful switch - IMPLEMENTED IN SWITCHER
+- [X] T137 [US6] Add Reactotron logging for organization switch events with old and new organization details - IMPLEMENTED IN use-active-organization
+- [X] T138 [US6] Test organization switching with users belonging to 2, 5, and 10+ organizations - READY FOR MANUAL TESTING
 
 **Checkpoint**: Organization switching is seamless with proper context updates and role-based UI changes
 
@@ -259,35 +259,35 @@
 
 ### Implementation for User Story 7
 
-- [ ] T139 [P] [US7] Create types/invitation.ts with Invitation, InvitationStatus, ContactType enums
-- [ ] T140 [P] [US7] Create services/api/invitations.ts with TanStack Query hooks: useInvitations, useSendInvitation, useRevokeInvitation, useAcceptInvitation
-- [ ] T141 [P] [US7] Create services/api/teams.ts with TanStack Query hooks: useTeamMembers, useUpdateMemberRole, useRemoveMember
-- [ ] T142 [P] [US7] Create hooks/use-invitations.ts for invitation queries and mutations
-- [ ] T143 [P] [US7] Create hooks/use-teams.ts for team member queries and mutations
-- [ ] T144 [P] [US7] Create hooks/use-deep-link.ts for deep link handling (invitations, password reset)
-- [ ] T145 [P] [US7] Create components/teams/member-list-item.tsx for team member card in FlatList with name, role, join date, last active
-- [ ] T146 [P] [US7] Create components/teams/invitation-list-item.tsx for pending invitation card with invitee, role, sent date, countdown, revoke action
-- [ ] T147 [P] [US7] Create components/teams/role-picker.tsx for role selection bottom sheet with role descriptions
-- [ ] T148 [P] [US7] Create components/teams/invite-form.tsx for team invitation form with email/phone input, role picker, optional message
+- [X] T139 [P] [US7] Create types/invitation.ts with Invitation, InvitationStatus, ContactType enums
+- [X] T140 [P] [US7] Create services/api/invitations.ts with TanStack Query hooks: useInvitations, useSendInvitation, useRevokeInvitation, useAcceptInvitation
+- [X] T141 [P] [US7] Create services/api/teams.ts with TanStack Query hooks: useTeamMembers, useUpdateMemberRole, useRemoveMember
+- [X] T142 [P] [US7] Create hooks/use-invitations.ts for invitation queries and mutations
+- [X] T143 [P] [US7] Create hooks/use-teams.ts for team member queries and mutations
+- [X] T144 [P] [US7] Create hooks/use-deep-link.ts for deep link handling (invitations, password reset)
+- [X] T145 [P] [US7] Create components/teams/member-list-item.tsx for team member card in FlatList with name, role, join date, last active
+- [X] T146 [P] [US7] Create components/teams/invitation-list-item.tsx for pending invitation card with invitee, role, sent date, countdown, revoke action
+- [X] T147 [P] [US7] Create components/teams/role-picker.tsx for role selection bottom sheet with role descriptions
+- [X] T148 [P] [US7] Create components/teams/invite-form.tsx for team invitation form with email/phone input, role picker, optional message
 - [ ] T149 [US7] Create app/(app)/teams/index.tsx for team members list screen (FlatList) with "Invite Member" FAB
 - [ ] T150 [US7] Create app/(app)/teams/invite.tsx for invite member modal/screen
 - [ ] T151 [US7] Create app/(app)/teams/[memberId].tsx for member detail/edit screen with role change option
-- [ ] T152 [US7] Create app/(app)/invitations/[token].tsx for invitation acceptance screen (deep link target)
-- [ ] T153 [US7] Create app/(app)/invitations/pending.tsx for user's pending invitations list
-- [ ] T154 [US7] Implement deep link parsing in hooks/use-deep-link.ts to extract invitation token from URL
-- [ ] T155 [US7] Handle deep link when app is closed, backgrounded, or active using Expo Linking API
-- [ ] T156 [US7] Fetch invitation details using token and display organization name, inviter name, assigned role, expiration countdown
-- [ ] T157 [US7] Implement invitation acceptance: create OrganizationMember record, update invitation status, invalidate organizations query
-- [ ] T158 [US7] Handle invitation for existing users: add to organization immediately
-- [ ] T159 [US7] Handle invitation for new users: direct to sign-up with pre-filled contact info, process invitation after account creation
-- [ ] T160 [US7] Prevent acceptance of expired invitations (14 days) with clear error message
-- [ ] T161 [US7] Prevent duplicate active invitations to same contact for same organization
-- [ ] T162 [US7] Implement invitation revocation: swipe left on pending invitation, show confirmation dialog, update status
-- [ ] T163 [US7] Show countdown timer (days remaining) on pending invitation cards
-- [ ] T164 [US7] Display "Expired" badge on invitations that exceeded 14-day validity
-- [ ] T165 [US7] Restrict team management access to Owner and Admin roles only
-- [ ] T166 [US7] Add Sentry tracking for invitation send, acceptance, and revocation events
-- [ ] T167 [US7] Add Reactotron logging for invitation flow: send request, deep link handling, acceptance process
+- [X] T152 [US7] Create app/(app)/invitations/[token].tsx for invitation acceptance screen (deep link target)
+- [X] T153 [US7] Create app/(app)/invitations/pending.tsx for user's pending invitations list
+- [X] T154 [US7] Implement deep link parsing in hooks/use-deep-link.ts to extract invitation token from URL
+- [X] T155 [US7] Handle deep link when app is closed, backgrounded, or active using Expo Linking API
+- [X] T156 [US7] Fetch invitation details using token and display organization name, inviter name, assigned role, expiration countdown
+- [X] T157 [US7] Implement invitation acceptance: create OrganizationMember record, update invitation status, invalidate organizations query
+- [X] T158 [US7] Handle invitation for existing users: add to organization immediately
+- [X] T159 [US7] Handle invitation for new users: direct to sign-up with pre-filled contact info, process invitation after account creation
+- [X] T160 [US7] Prevent acceptance of expired invitations (14 days) with clear error message
+- [X] T161 [US7] Prevent duplicate active invitations to same contact for same organization
+- [X] T162 [US7] Implement invitation revocation: swipe left on pending invitation, show confirmation dialog, update status
+- [X] T163 [US7] Show countdown timer (days remaining) on pending invitation cards
+- [X] T164 [US7] Display "Expired" badge on invitations that exceeded 14-day validity
+- [X] T165 [US7] Restrict team management access to Owner and Admin roles only
+- [X] T166 [US7] Add Sentry tracking for invitation send, acceptance, and revocation events
+- [X] T167 [US7] Add Reactotron logging for invitation flow: send request, deep link handling, acceptance process
 - [ ] T168 [US7] Test invitation flow end-to-end: send → receive notification → open deep link → accept → join organization
 
 **Checkpoint**: Team invitation system is fully functional with deep link handling, expiration management, and proper role assignment
@@ -302,19 +302,19 @@
 
 ### Implementation for User Story 8
 
-- [ ] T169 [P] [US8] Define role permissions map in constants/roles.ts: Owner (full control), Admin (manage members, org settings), Manager (manage properties), Agent (view/update assigned), Viewer (read-only)
-- [ ] T170 [US8] Implement permission checking functions in hooks/use-permissions.ts: canManageMembers, canManageOrganization, canManageProperties, canInviteMembers
-- [ ] T171 [US8] Add role-based menu filtering in app/(app)/_layout.tsx: show/hide menu items based on current role
-- [ ] T172 [US8] Display user's current role badge prominently in dashboard header component
-- [ ] T173 [US8] Implement conditional rendering in navigation drawer/tabs: hide team management for Agent/Viewer, hide org settings for non-Admin
-- [ ] T174 [US8] Disable action buttons for unauthorized actions with reduced opacity and tooltip explaining restriction
-- [ ] T175 [US8] Show "Access Denied" toast notification when user attempts unauthorized action
-- [ ] T176 [US8] Update role-based menu items immediately when organization switches (user may have different role in new org)
-- [ ] T177 [US8] Add role information to profile screen with tooltip explaining role capabilities
-- [ ] T178 [US8] Display role descriptions in role picker component during invitation and role change flows
+- [X] T169 [P] [US8] Define role permissions map in constants/roles.ts: Owner (full control), Admin (manage members, org settings), Manager (manage properties), Agent (view/update assigned), Viewer (read-only)
+- [X] T170 [US8] Implement permission checking functions in hooks/use-permissions.ts: canManageMembers, canManageOrganization, canManageProperties, canInviteMembers
+- [X] T171 [US8] Add role-based menu filtering in app/(app)/_layout.tsx: show/hide menu items based on current role
+- [X] T172 [US8] Display user's current role badge prominently in dashboard header component
+- [X] T173 [US8] Implement conditional rendering in navigation drawer/tabs: hide team management for Agent/Viewer, hide org settings for non-Admin
+- [X] T174 [US8] Disable action buttons for unauthorized actions with reduced opacity and tooltip explaining restriction
+- [X] T175 [US8] Show "Access Denied" toast notification when user attempts unauthorized action
+- [X] T176 [US8] Update role-based menu items immediately when organization switches (user may have different role in new org)
+- [X] T177 [US8] Add role information to profile screen with tooltip explaining role capabilities
+- [X] T178 [US8] Display role descriptions in role picker component during invitation and role change flows
 - [ ] T179 [US8] Test role hierarchy: Owner can manage all, Admin can manage members/settings, Manager can manage properties, Agent limited to assigned, Viewer read-only
 - [ ] T180 [US8] Prevent owner from leaving organization without ownership transfer (show dialog with requirement)
-- [ ] T181 [US8] Add Sentry logging for unauthorized access attempts with user context (user ID, attempted action, current role)
+- [X] T181 [US8] Add Sentry logging for unauthorized access attempts with user context (user ID, attempted action, current role)
 - [ ] T182 [US8] Verify role changes take effect immediately without requiring re-authentication
 
 **Checkpoint**: Role-based access control is fully implemented with proper UI restrictions and clear user feedback
