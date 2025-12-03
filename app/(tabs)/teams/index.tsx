@@ -114,6 +114,7 @@ export default function TeamMembersScreen() {
     if (searchQuery.trim()) {
       return (
         <EmptyState
+          illustrationType="search"
           title="No members found"
           description={`No members match "${searchQuery}"`}
           actionLabel="Clear Search"
@@ -124,6 +125,7 @@ export default function TeamMembersScreen() {
 
     return (
       <EmptyState
+        illustrationType="teams"
         title="No team members yet"
         description="Invite team members to start collaborating"
         actionLabel={canInviteMembers ? 'Invite Member' : undefined}

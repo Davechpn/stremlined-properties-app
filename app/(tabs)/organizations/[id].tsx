@@ -159,6 +159,7 @@ export default function OrganizationDetailScreen() {
               <LoadingIndicator message="Loading members..." size="small" />
             ) : members.length === 0 ? (
               <EmptyState
+                illustrationType="teams"
                 title="No members yet"
                 description="Invite members to get started"
               />

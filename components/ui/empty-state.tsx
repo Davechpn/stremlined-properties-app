@@ -7,9 +7,12 @@
 import React from 'react';
 import { Image, StyleSheet, View } from 'react-native';
 import { Button, Text } from 'react-native-paper';
+import { EmptyStateIllustration, IllustrationType } from './empty-state-illustration';
 
 export interface EmptyStateProps {
-  /** Illustration image source */
+  /** Illustration type (replaces image) */
+  illustrationType?: IllustrationType;
+  /** Legacy: Illustration image source (deprecated in favor of illustrationType) */
   image?: any;
   /** Title text */
   title: string;
@@ -19,21 +22,24 @@ export interface EmptyStateProps {
   actionLabel?: string;
   /** Action button callback */
   onAction?: () => void;
-  /** Image size */
+  /** Image/Illustration size */
   imageSize?: number;
 }
 
 export const EmptyState: React.FC<EmptyStateProps> = ({
+  illustrationType,
   image,
   title,
   description,
   actionLabel,
   onAction,
-  imageSize = 200,
+  imageSize = 120,
 }) => {
   return (
     <View style={styles.container}>
-      {image ? (
+      {illustrationType ? (
+        <EmptyStateIllustration type={illustrationType} size={imageSize} />
+      ) : image ? (
         <Image
           source={image}
           style={[styles.image, { width: imageSize, height: imageSize }]}

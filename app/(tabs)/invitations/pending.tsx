@@ -152,6 +152,7 @@ export default function PendingInvitationsScreen() {
 
     return (
       <EmptyState
+        illustrationType="invitations"
         title={message.title}
         description={message.description}
         actionLabel="Go Back"

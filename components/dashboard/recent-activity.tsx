@@ -108,6 +108,7 @@ export const RecentActivity: React.FC<RecentActivityProps> = ({
     if (isLoading) return null;
     return (
       <EmptyState
+        illustrationType="activity"
         title="No Activity Yet"
         description="Recent activity within your organization will appear here."
       />

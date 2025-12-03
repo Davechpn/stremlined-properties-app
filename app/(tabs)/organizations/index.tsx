@@ -177,6 +177,7 @@ export default function OrganizationsScreen() {
         }
         ListEmptyComponent={
           <EmptyState
+            illustrationType="organizations"
             title="No Organizations"
             description="You are not a member of any organizations yet."
           />

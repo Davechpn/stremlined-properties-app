@@ -150,11 +150,13 @@ export const OrganizationSwitcher: React.FC<OrganizationSwitcherProps> = ({
         ) : filteredOrganizations.length === 0 ? (
           searchQuery ? (
             <EmptyState
+              illustrationType="search"
               title="No results"
               description={`No organizations match "${searchQuery}"`}
             />
           ) : (
             <EmptyState
+              illustrationType="organizations"
               title="No organizations"
               description="You're not a member of any organizations yet"
             />
