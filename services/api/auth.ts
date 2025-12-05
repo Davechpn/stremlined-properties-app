@@ -3,6 +3,8 @@
  */
 
 import { USER_DATA_KEY } from '@/constants/auth';
+import { errorFeedback, successFeedback } from '@/lib/utils/haptics';
+import { clearSessionExpired } from '@/services/auth/session-events';
 import { logAuthFlowToReactotron } from '@/services/monitoring/reactotron';
 import { logAuthEvent } from '@/services/monitoring/sentry';
 import { removeItem, setItem } from '@/services/storage/async-storage';
@@ -10,7 +12,6 @@ import { removeRefreshToken, removeToken, storeRefreshToken, storeToken } from '
 import type { ApiResponse } from '@/types/api';
 import type { AuthCredentials, AuthenticationResponse, PasswordReset, PasswordResetRequest, SignUpCredentials, User } from '@/types/auth';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import apiClient from './client';
 
 /**
@@ -175,6 +176,9 @@ export function useSignIn() {
       // Store tokens
       await storeToken(authResponse.accessToken);
       await storeRefreshToken(authResponse.refreshToken);
+      try {
+        clearSessionExpired();
+      } catch (e) {}
       
       // Cache user data
       await setItem(USER_DATA_KEY, authResponse.user);

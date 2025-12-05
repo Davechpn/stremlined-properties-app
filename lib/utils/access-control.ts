@@ -5,9 +5,9 @@
  * unauthorized actions based on their role.
  */
 
+import { warningFeedback } from '@/lib/utils/haptics';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import { warningFeedback } from '@/lib/utils/haptics';
 import { Alert, Platform, ToastAndroid } from 'react-native';
 
 /**

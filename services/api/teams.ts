@@ -8,8 +8,8 @@
 import { Role } from '@/types/organization';
 import * as Sentry from '@sentry/react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import apiClient from './client';
 import { logToReactotron } from '../monitoring/reactotron';
+import apiClient from './client';
 
 /**
  * Team member with user details

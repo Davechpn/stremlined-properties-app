@@ -8,7 +8,7 @@
 import { Avatar } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { Icon } from '@/components/ui/icon';
-import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
 import * as ImageManipulator from 'expo-image-manipulator';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState } from 'react';

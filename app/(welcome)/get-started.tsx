@@ -5,9 +5,9 @@
  */
 
 import { HAS_SEEN_ONBOARDING_KEY } from '@/constants/auth';
+import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import { setItem } from '@/services/storage/async-storage';
-import { mediumImpact, lightImpact } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';

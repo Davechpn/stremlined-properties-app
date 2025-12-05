@@ -8,9 +8,9 @@
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
 import { useOfflineStatus } from '@/hooks/use-offline-status';
+import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import { User } from '@/types/auth';
 import { OrganizationWithMember, Role } from '@/types/organization';
-import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { IconButton, Text, useTheme } from 'react-native-paper';

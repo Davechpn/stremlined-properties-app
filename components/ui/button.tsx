@@ -4,7 +4,7 @@
  * Wrapper around React Native Paper Button with haptic feedback
  */
 
-import { lightImpact, mediumImpact, heavyImpact } from '@/lib/utils/haptics';
+import { heavyImpact, lightImpact, mediumImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { Button as PaperButton, ButtonProps as PaperButtonProps } from 'react-native-paper';
 

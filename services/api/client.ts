@@ -10,6 +10,7 @@
  */
 
 import { API_BASE_URL, API_TIMEOUT } from '@/constants/app';
+import { clearSessionExpired, emitSessionExpired, isSessionExpired } from '@/services/auth/session-events';
 import { logApiToReactotron } from '@/services/monitoring/reactotron';
 import { logApiRequest } from '@/services/monitoring/sentry';
 import { getRefreshToken, getToken, removeToken, storeToken } from '@/services/storage/secure-storage';
@@ -52,6 +53,44 @@ apiClient.interceptors.request.use(
     console.log('🔵 [API Client] Request interceptor - starting', config.url);
     const startTime = Date.now();
     
+    // Don't short-circuit auth endpoints (login/register/refresh/logout)
+    const isAuthEndpoint = !!config.url && (
+      config.url.includes('/auth/login') ||
+      config.url.includes('/auth/register') ||
+      config.url.includes('/auth/refresh') ||
+      config.url.includes('/auth/logout')
+    );
+
+    // If the app has already marked the session expired, short-circuit
+    // outgoing requests to avoid repeated retries/refresh attempts. Skip
+    // this for auth endpoints so login/register still work.
+    try {
+      if (!isAuthEndpoint && isSessionExpired()) {
+        const err = new Error('Session expired');
+
+        // Wait briefly to allow the UI (RootLayout) to mount and consume
+        // the session-expired event. If the flag is cleared within the
+        // timeout, proceed with the request; otherwise reject.
+        return new Promise((resolve, reject) => {
+          const waitMs = 150;
+          const t = setTimeout(() => {
+            try {
+              if (isSessionExpired()) {
+                reject(err as any);
+              } else {
+                resolve(config);
+              }
+            } catch (e) {
+              reject(err as any);
+            }
+          }, waitMs);
+
+          // In case the request is cancelled externally, clear timeout
+          // when promise settles (not strictly necessary here).
+        });
+      }
+    } catch (e) {}
+
     // Add auth token if available
     const token = await getToken();
     console.log('🔵 [API Client] Token retrieved:', token ? 'exists' : 'none');
@@ -135,8 +174,15 @@ apiClient.interceptors.response.use(
                            originalRequest?.url?.includes('/auth/refresh') ||
                            originalRequest?.url?.includes('/auth/logout');
     
-    if (error.response?.status === 401 && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
-      console.log('🔴 [API Client] 401 error - attempting token refresh');
+    // Check if error is related to invalid/expired tokens
+    const errorData = error.response?.data as any;
+    const isTokenError = status === 401 || 
+                        (status === 500 && 
+                         (errorData?.message?.toLowerCase().includes('token') ||
+                          errorData?.errors?.some((e: string) => e.toLowerCase().includes('token'))));
+    
+    if (isTokenError && originalRequest && !originalRequest._retry && !isAuthEndpoint) {
+      console.log('🔴 [API Client] Token error detected - attempting token refresh');
       if (isRefreshing) {
         // Queue this request until token refresh completes
         return new Promise((resolve, reject) => {
@@ -158,12 +204,18 @@ apiClient.interceptors.response.use(
         const refreshToken = await getRefreshToken();
         
         if (!refreshToken) {
+          console.log('🔴 [API Client] No refresh token available - clearing auth');
           // No refresh token, user needs to re-authenticate
           await removeToken();
+          // Notify app that session expired so UI can navigate to sign-in
+          try {
+            emitSessionExpired();
+          } catch (e) {}
           processQueue(new Error('No refresh token available'), null);
           return Promise.reject(error);
         }
 
+        console.log('🔵 [API Client] Attempting to refresh token');
         // Attempt to refresh token
         const response = await axios.post(`${API_BASE_URL}/auth/refresh`, {
           refreshToken,
@@ -171,6 +223,12 @@ apiClient.interceptors.response.use(
 
         const { accessToken } = response.data;
         await storeToken(accessToken);
+        // Clear session-expired flag now that refresh succeeded
+        try {
+          clearSessionExpired();
+        } catch (e) {}
+
+        console.log('🟢 [API Client] Token refreshed successfully');
         
         // Update authorization header
         if (originalRequest.headers) {
@@ -183,11 +241,17 @@ apiClient.interceptors.response.use(
         // Retry original request with new token
         return apiClient(originalRequest);
       } catch (refreshError) {
+        console.log('🔴 [API Client] Token refresh failed - clearing auth');
         // Token refresh failed, user needs to re-authenticate
         processQueue(refreshError as Error, null);
         await removeToken();
         isRefreshing = false;
         
+        // Notify app that session expired so UI can navigate to sign-in
+        try {
+          emitSessionExpired();
+        } catch (e) {}
+
         Sentry.captureException(refreshError, {
           tags: { api: 'token-refresh-failed' },
         });

@@ -36,6 +36,13 @@ export default function OrganizationsLayout() {
         }} 
       />
       <Stack.Screen 
+        name="create" 
+        options={{ 
+          title: 'Create Organization',
+          headerShown: false,
+        }} 
+      />
+      <Stack.Screen 
         name="[id]" 
         options={{ 
           title: 'Organization',

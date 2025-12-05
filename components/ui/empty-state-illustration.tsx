@@ -5,10 +5,10 @@
  * Uses MaterialCommunityIcons for consistent design
  */
 
+import { MaterialCommunityIcons } from '@expo/vector-icons';
 import React from 'react';
 import { StyleSheet, View } from 'react-native';
 import { useTheme } from 'react-native-paper';
-import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 export type IllustrationType = 
   | 'organizations'

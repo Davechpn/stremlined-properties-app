@@ -75,15 +75,32 @@ export const useOrganization = (organizationId: string | null) => {
   return useQuery<Organization>({
     queryKey: ['organizations', organizationId],
     queryFn: async () => {
+      console.log('🔵 [API] Fetching organization from:', `/organizations/${organizationId}`);
       try {
         const { data } = await apiClient.get<Organization>(
           `/organizations/${organizationId}`
         );
+        console.log('🔵 [API] Raw organization response:', JSON.stringify(data, null, 2));
+        
         if (!data) {
           throw new Error('No data returned from API');
         }
+        
+        console.log('🟢 [API] Organization fetched successfully:', {
+          id: data.id,
+          name: data.name,
+          userRole: data.userRole,
+          memberCount: data.memberCount,
+        });
+        
         return data;
       } catch (error) {
+        console.error('🔴 [API] Error fetching organization:', error);
+        console.error('🔴 [API] Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          response: (error as any)?.response?.data,
+          status: (error as any)?.response?.status,
+        });
         Sentry.captureException(error, {
           tags: { api_operation: 'fetch-organization', organization_id: organizationId || 'unknown' },
         });

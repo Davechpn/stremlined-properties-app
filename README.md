@@ -1,50 +1,74 @@
-# Welcome to your Expo app 👋
+# Streamlined Properties App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A React Native + Expo application for managing properties, teams, and organizations. This repository includes an Expo Router-based file structure, TypeScript types, reusable components, hooks, and API service modules.
 
-## Get started
+This project is focused on account and organization management features (sign-up, sign-in, invitations, teams, profiles) and is organized for maintainability and reusability.
+
+Quick links
+- Code: `app/`, `components/`, `services/`, `hooks/`, `types/`
+- Docs: `docs/` (development, architecture, API)
+- Contributing: `CONTRIBUTING.md`
+
+Prerequisites
+- Node.js (LTS), npm or Yarn
+- Xcode (for iOS simulator) or Android Studio (for Android emulator)
+- Expo CLI (optional but useful): `npm install -g expo-cli`
+
+Quickstart
 
 1. Install dependencies
 
-   ```bash
-   npm install
-   ```
-
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
 ```bash
-npm run reset-project
+npm install
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+2. Start the Metro/Expo dev server
 
-## Learn more
+```bash
+npm start
+# or
+npm run ios    # open iOS simulator
+npm run android # open Android emulator
+```
 
-To learn more about developing your project with Expo, look at the following resources:
+Available scripts (in `package.json`)
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+- `start` — run `expo start` (dev server)
+- `ios` — start and open iOS simulator
+- `android` — start and open Android emulator
+- `web` — run web version
+- `reset-project` — helper script to reset starter project files
+- `lint` — run ESLint
 
-## Join the community
+Repository structure (high level)
 
-Join our community of developers creating universal apps.
+- `app/` — Expo Router entry and file-based routes (screens)
+- `components/` — reusable UI components (organized by feature)
+- `services/` — API clients, auth, storage, monitoring
+- `hooks/` — React hooks used across the app
+- `types/` — TypeScript type definitions for API and domain
+- `constants/` — app-level constants and configuration
+- `assets/` — images and other static assets
+- `docs/` — documentation (development, architecture, API)
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Docs and contribution
+
+See `docs/development.md` for setup and common tasks, `docs/architecture.md` for folder layout and design patterns, and `docs/api.md` for API and types overview. See `CONTRIBUTING.md` for how to contribute.
+
+Where to start reading the code
+
+- App entry: `app/index.tsx` and `app/_layout.tsx`
+- Auth flows: `app/(auth)/*` and `components/auth/*`
+- Main app screens: `app/(tabs)/*` and `components/dashboard/*`
+- API clients and types: `services/api/` and `types/`
+
+Contact and notes
+
+If you need an overview of a specific area (e.g., onboarding, auth, or the API layer), open an issue or a PR describing the area you'd like documented further.
+
+---
+Generated documentation files:
+- `docs/development.md`
+- `docs/architecture.md`
+- `docs/api.md`
+

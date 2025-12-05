@@ -1,63 +1,76 @@
 /**
- * Pending Invitations Screen
+ * Invitations Screen
  * 
- * Display list of all pending invitations sent by the user
- * for the active organization.
+ * Displays all user invitations (sent and received).
+ * Uses GET /api/v1/invitations endpoint.
  */
 
-import { InvitationListItem } from '@/components/teams/invitation-list-item';
 import { EmptyState } from '@/components/ui/empty-state';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { LoadingIndicator } from '@/components/ui/loading-indicator';
-import { useActiveOrganization } from '@/hooks/use-active-organization';
-import { useInvitationManagement } from '@/hooks/use-invitations';
-import { Invitation, InvitationStatus } from '@/types/invitation';
+import { useUserInvitationsManagement } from '@/hooks/use-invitations';
+import { formatRelativeTime } from '@/lib/utils/formatting';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
 import { logToReactotron } from '@/services/monitoring/reactotron';
+import { InvitationFromAPI } from '@/types/invitation';
 import * as Sentry from '@sentry/react-native';
-import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Alert, FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { SegmentedButtons, Text, useTheme } from 'react-native-paper';
+import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
+import { Badge, Button, Card, Divider, SegmentedButtons, Text, useTheme } from 'react-native-paper';
+
+type InvitationType = 'sent' | 'received';
 
 export default function PendingInvitationsScreen() {
   const theme = useTheme();
   const router = useRouter();
-  const { activeOrganizationId } = useActiveOrganization();
 
-  const [statusFilter, setStatusFilter] = useState<InvitationStatus>(InvitationStatus.PENDING);
+  const [invitationType, setInvitationType] = useState<InvitationType>('received');
   const [refreshing, setRefreshing] = useState(false);
 
-  // Fetch invitations
+  // Fetch user invitations
   const {
-    invitations,
+    sentInvitations,
+    receivedInvitations,
     isLoading,
     error,
     refetch,
-    revokeInvitation,
-    isRevoking,
-    pendingCount,
-    expiredCount,
-  } = useInvitationManagement(activeOrganizationId, statusFilter);
+    pendingSentCount,
+    pendingReceivedCount,
+    expiredSentCount,
+    expiredReceivedCount,
+    data,
+  } = useUserInvitationsManagement();
+
+  // Debug logging
+  useEffect(() => {
+    console.log('🟣 [Invitations Screen] State:', {
+      isLoading,
+      hasError: !!error,
+      error: error instanceof Error ? error.message : error,
+      sentCount: sentInvitations.length,
+      receivedCount: receivedInvitations.length,
+      rawData: data,
+    });
+  }, [isLoading, error, sentInvitations, receivedInvitations, data]);
 
   // Log screen view
   useEffect(() => {
-    logToReactotron('Pending invitations screen viewed', {
-      organizationId: activeOrganizationId,
-      statusFilter,
-      count: invitations.length,
+    logToReactotron('User invitations screen viewed', {
+      sentCount: sentInvitations.length,
+      receivedCount: receivedInvitations.length,
     });
 
     Sentry.addBreadcrumb({
       category: 'navigation',
-      message: 'Pending invitations screen viewed',
+      message: 'User invitations screen viewed',
       level: 'info',
       data: {
-        organizationId: activeOrganizationId,
-        count: invitations.length,
+        sentCount: sentInvitations.length,
+        receivedCount: receivedInvitations.length,
       },
     });
-  }, [activeOrganizationId, statusFilter, invitations.length]);
+  }, [sentInvitations.length, receivedInvitations.length]);
 
   // Handle refresh
   const handleRefresh = async () => {
@@ -75,88 +88,104 @@ export default function PendingInvitationsScreen() {
     }
   };
 
-  // Handle revoke invitation
-  const handleRevoke = async (invitation: Invitation) => {
-    try {
-      logToReactotron('Revoking invitation', {
-        invitationId: invitation.id,
-        contact: invitation.inviteeContact,
-      });
-
-      await revokeInvitation(invitation.token);
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-
-      logToReactotron('Invitation revoked successfully', {
-        invitationId: invitation.id,
-      });
-
-      Sentry.addBreadcrumb({
-        category: 'invitation',
-        message: 'Invitation revoked',
-        level: 'info',
-        data: {
-          invitationId: invitation.id,
-        },
-      });
-
-      // Refresh list
-      refetch();
-    } catch (error) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
-
-      logToReactotron('Revoke invitation error', {
-        error: error instanceof Error ? error.message : 'Unknown error',
-      });
-
-      Sentry.captureException(error, {
-        tags: { context: 'revoke-invitation' },
-      });
-
-      Alert.alert('Revoke Failed', 'Failed to revoke invitation. Please try again.');
+  // Handle invitation press
+  const handleInvitationPress = async (invitation: InvitationFromAPI) => {
+    await lightImpact();
+    // Navigate to organization detail or invitation acceptance
+    if (invitationType === 'received' && invitation.status.toLowerCase() === 'pending') {
+      // TODO: Navigate to accept invitation screen
+      router.push(`/invitations/${invitation.id}` as any);
+    } else {
+      router.push(`/organizations/${invitation.organizationId}` as any);
     }
   };
 
-  // Handle back press
-  const handleBack = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.back();
-  };
+  // Get current invitations list
+  const currentInvitations = invitationType === 'sent' ? sentInvitations : receivedInvitations;
 
   // Render invitation item
-  const renderInvitation = ({ item }: { item: Invitation }) => (
-    <InvitationListItem invitation={item} onRevoke={handleRevoke} disabled={isRevoking} />
-  );
+  const renderInvitation = ({ item }: { item: InvitationFromAPI }) => {
+    const isPending = item.status.toLowerCase() === 'pending';
+    const isExpired = item.isExpired;
+
+    return (
+      <Card 
+        style={styles.invitationCard}
+        onPress={() => handleInvitationPress(item)}
+      >
+        <Card.Content>
+          <View style={styles.invitationHeader}>
+            <Text variant="titleMedium" style={styles.organizationName}>
+              {item.organizationName}
+            </Text>
+            <Badge
+              size={24}
+              style={[
+                styles.badge,
+                isPending && !isExpired && { backgroundColor: theme.colors.primaryContainer },
+                isExpired && { backgroundColor: theme.colors.errorContainer },
+              ]}
+            >
+              {isExpired ? 'Expired' : item.status}
+            </Badge>
+          </View>
+
+          <View style={styles.invitationDetails}>
+            {invitationType === 'sent' ? (
+              <>
+                <Text variant="bodyMedium" style={styles.detailText}>
+                  To: {item.email || item.phoneNumber}
+                </Text>
+                <Text variant="bodySmall" style={styles.detailText}>
+                  Role: {item.role}
+                </Text>
+              </>
+            ) : (
+              <>
+                <Text variant="bodyMedium" style={styles.detailText}>
+                  From: {item.inviterName}
+                </Text>
+                <Text variant="bodySmall" style={styles.detailText}>
+                  Role: {item.role}
+                </Text>
+              </>
+            )}
+          </View>
+
+          <Divider style={styles.divider} />
+
+          <View style={styles.invitationFooter}>
+            <Text variant="bodySmall" style={styles.timestamp}>
+              {formatRelativeTime(item.createdAt)}
+            </Text>
+            {!isExpired && isPending && (
+              <Text variant="bodySmall" style={styles.expiryText}>
+                {item.daysRemaining} day{item.daysRemaining !== 1 ? 's' : ''} remaining
+              </Text>
+            )}
+          </View>
+        </Card.Content>
+      </Card>
+    );
+  };
 
   // Render empty state
   const renderEmptyState = () => {
-    const messages: Record<InvitationStatus, { title: string; description: string }> = {
-      [InvitationStatus.PENDING]: {
-        title: 'No pending invitations',
-        description: 'All sent invitations have been accepted or expired',
-      },
-      [InvitationStatus.ACCEPTED]: {
-        title: 'No accepted invitations',
-        description: 'No invitations have been accepted yet',
-      },
-      [InvitationStatus.EXPIRED]: {
-        title: 'No expired invitations',
-        description: 'All sent invitations are still valid',
-      },
-      [InvitationStatus.REVOKED]: {
-        title: 'No revoked invitations',
-        description: "You haven't revoked any invitations",
-      },
-    };
-
-    const message = messages[statusFilter];
+    const message = invitationType === 'sent'
+      ? {
+          title: 'No sent invitations',
+          description: "You haven't sent any invitations yet",
+        }
+      : {
+          title: 'No received invitations',
+          description: "You don't have any pending invitations",
+        };
 
     return (
       <EmptyState
         illustrationType="invitations"
         title={message.title}
         description={message.description}
-        actionLabel="Go Back"
-        onAction={handleBack}
       />
     );
   };
@@ -166,6 +195,9 @@ export default function PendingInvitationsScreen() {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.colors.background }]}>
         <LoadingIndicator message="Loading invitations..." />
+        <Text variant="bodySmall" style={{ marginTop: 16, opacity: 0.6 }}>
+          Fetching from: /api/v1/invitations
+        </Text>
       </View>
     );
   }
@@ -175,17 +207,32 @@ export default function PendingInvitationsScreen() {
     return (
       <View style={[styles.container, styles.centered, { backgroundColor: theme.colors.background }]}>
         <ErrorMessage error={error} onRetry={handleRefresh} />
+        <Text variant="bodySmall" style={{ marginTop: 16, opacity: 0.6 }}>
+          Error details: {error instanceof Error ? error.message : 'Unknown error'}
+        </Text>
       </View>
     );
   }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
+      {/* Debug info at top */}
+      {__DEV__ && (
+        <View style={[styles.debugBanner, { backgroundColor: theme.colors.surfaceVariant }]}>
+          <Text variant="bodySmall" style={{ marginBottom: 4 }}>
+            Debug: Sent={sentInvitations.length}, Received={receivedInvitations.length}
+          </Text>
+          <Button mode="outlined" onPress={() => refetch()} compact>
+            Refetch Now
+          </Button>
+        </View>
+      )}
+      
       {/* Stats header */}
       <View style={[styles.statsHeader, { backgroundColor: theme.colors.surface }]}>
         <View style={styles.stat}>
           <Text variant="titleLarge" style={styles.statValue}>
-            {pendingCount}
+            {invitationType === 'sent' ? pendingSentCount : pendingReceivedCount}
           </Text>
           <Text
             variant="bodySmall"
@@ -196,7 +243,7 @@ export default function PendingInvitationsScreen() {
         </View>
         <View style={styles.stat}>
           <Text variant="titleLarge" style={styles.statValue}>
-            {expiredCount}
+            {invitationType === 'sent' ? expiredSentCount : expiredReceivedCount}
           </Text>
           <Text
             variant="bodySmall"
@@ -205,25 +252,32 @@ export default function PendingInvitationsScreen() {
             Expired
           </Text>
         </View>
+        <View style={styles.stat}>
+          <Text variant="titleLarge" style={styles.statValue}>
+            {currentInvitations.length}
+          </Text>
+          <Text
+            variant="bodySmall"
+            style={[styles.statLabel, { color: theme.colors.onSurfaceVariant }]}
+          >
+            Total
+          </Text>
+        </View>
       </View>
 
-      {/* Status filter */}
+      {/* Type filter */}
       <View style={styles.filterContainer}>
         <SegmentedButtons
-          value={statusFilter}
-          onValueChange={(value) => setStatusFilter(value as InvitationStatus)}
+          value={invitationType}
+          onValueChange={(value) => setInvitationType(value as InvitationType)}
           buttons={[
             {
-              value: InvitationStatus.PENDING,
-              label: 'Pending',
+              value: 'received',
+              label: `Received (${receivedInvitations.length})`,
             },
             {
-              value: InvitationStatus.ACCEPTED,
-              label: 'Accepted',
-            },
-            {
-              value: InvitationStatus.EXPIRED,
-              label: 'Expired',
+              value: 'sent',
+              label: `Sent (${sentInvitations.length})`,
             },
           ]}
         />
@@ -231,12 +285,12 @@ export default function PendingInvitationsScreen() {
 
       {/* Invitations list */}
       <FlatList
-        data={invitations}
+        data={currentInvitations}
         renderItem={renderInvitation}
         keyExtractor={(item) => item.id}
         contentContainerStyle={[
           styles.listContent,
-          invitations.length === 0 && styles.listContentEmpty,
+          currentInvitations.length === 0 && styles.listContentEmpty,
         ]}
         ListEmptyComponent={renderEmptyState}
         refreshControl={
@@ -265,6 +319,12 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
+  debugBanner: {
+    padding: 12,
+    alignItems: 'center',
+    borderBottomWidth: 1,
+    borderBottomColor: '#E0E0E0',
+  },
   statsHeader: {
     flexDirection: 'row',
     justifyContent: 'space-around',
@@ -292,5 +352,42 @@ const styles = StyleSheet.create({
   listContentEmpty: {
     flexGrow: 1,
     justifyContent: 'center',
+  },
+  invitationCard: {
+    marginBottom: 12,
+  },
+  invitationHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  organizationName: {
+    fontWeight: '600',
+    flex: 1,
+  },
+  badge: {
+    marginLeft: 8,
+  },
+  invitationDetails: {
+    gap: 4,
+  },
+  detailText: {
+    opacity: 0.8,
+  },
+  divider: {
+    marginVertical: 12,
+  },
+  invitationFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  timestamp: {
+    opacity: 0.6,
+  },
+  expiryText: {
+    opacity: 0.6,
+    fontStyle: 'italic',
   },
 });

@@ -4,9 +4,9 @@
  * Carousel of 2-3 feature highlight screens with 60fps animations
  */
 
+import { lightImpact } from '@/lib/utils/haptics';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import type { OnboardingSlide } from '@/types/welcome';
-import { lightImpact } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useRef, useState } from 'react';
 import { Dimensions, FlatList, NativeScrollEvent, NativeSyntheticEvent, StyleSheet, View } from 'react-native';

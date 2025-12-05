@@ -23,10 +23,10 @@ import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
 import { useOrganizations } from '@/hooks/use-organizations';
 import { usePermissions } from '@/hooks/use-permissions';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
 import { useProfile } from '@/services/api/profile';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
@@ -124,6 +124,26 @@ export default function DashboardScreen() {
       });
     }
   }, [activeOrganizationId]);
+
+  // Auto-select first organization if none is active
+  useEffect(() => {
+    if (!isLoadingOrgs && organizations && organizations.length > 0 && !activeOrganizationId) {
+      const firstOrg = organizations[0];
+      console.log('🟢 [Dashboard] Auto-selecting first organization:', {
+        orgId: firstOrg.id,
+        orgName: firstOrg.name,
+        role: firstOrg.role,
+      });
+      
+      switchOrganization(firstOrg.id).catch((error) => {
+        console.error('🔴 [Dashboard] Failed to auto-select organization:', error);
+        Sentry.captureException(error, {
+          tags: { context: 'dashboard-auto-select-org' },
+          extra: { organizationId: firstOrg.id },
+        });
+      });
+    }
+  }, [organizations, activeOrganizationId, isLoadingOrgs, switchOrganization]);
 
   // Find active organization
   const activeOrganization = organizations?.find((org) => org.id === activeOrganizationId) || 
@@ -284,7 +304,10 @@ export default function DashboardScreen() {
     actions.push({
       label: 'View Profile',
       icon: 'account',
-      onPress: () => console.log('View profile'),
+      onPress: () => {
+        lightImpact();
+        router.push('/profile' as any);
+      },
       variant: 'outlined' as const,
     });
 

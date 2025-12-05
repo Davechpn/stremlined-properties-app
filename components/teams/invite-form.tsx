@@ -8,10 +8,10 @@
 import { RolePicker } from '@/components/teams/role-picker';
 import { Button } from '@/components/ui/button';
 import { TextInput } from '@/components/ui/text-input';
+import { errorFeedback, lightImpact, mediumImpact, successFeedback } from '@/lib/utils/haptics';
 import { validateEmail, validatePhoneNumber } from '@/lib/utils/validation';
 import { ContactType } from '@/types/invitation';
 import { Role } from '@/types/organization';
-import { lightImpact, mediumImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import React, { useState } from 'react';
 import { KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
 import { Chip, HelperText, Text, useTheme } from 'react-native-paper';

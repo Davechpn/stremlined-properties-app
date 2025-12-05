@@ -4,9 +4,9 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import * as Linking from 'expo-linking';
 import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { PaperProvider } from 'react-native-paper';
+import { PaperProvider, Snackbar } from 'react-native-paper';
 import 'react-native-reanimated';
 
 import { ErrorBoundary } from '@/components/ui/error-boundary';
@@ -14,6 +14,7 @@ import { OfflineIndicator } from '@/components/ui/offline-indicator';
 import { paperDarkTheme, paperLightTheme } from '@/constants/paper-theme';
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { asyncStoragePersister, queryClient } from '@/services/api/query-client';
+import { consumeSessionExpired, onSessionExpired } from '@/services/auth/session-events';
 import { initializeReactotron, logAuthFlowToReactotron } from '@/services/monitoring/reactotron';
 import { initializeSentry } from '@/services/monitoring/sentry';
 import { StyleSheet } from 'react-native';
@@ -43,12 +44,68 @@ export const unstable_settings = {
 function RootLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
+  const [sessionExpiredVisible, setSessionExpiredVisible] = useState(false);
 
   // Initialize monitoring services
   useEffect(() => {
     initializeSentry();
     initializeReactotron();
   }, []);
+
+  // When the auth session expires (refresh failed), clear caches and go to sign-in
+  useEffect(() => {
+    const handle = async () => {
+      try {
+        // Clear in-memory query cache
+        queryClient.clear();
+      } catch (e) {}
+
+      try {
+        // Remove persisted query cache (if persister supports it)
+        if (asyncStoragePersister && typeof (asyncStoragePersister as any).removeClient === 'function') {
+          try {
+            await (asyncStoragePersister as any).removeClient();
+          } catch (e) {}
+        }
+      } catch (e) {}
+
+      try {
+        // Clear Sentry user context
+        Sentry.setUser(null);
+      } catch (e) {}
+
+      // Show user-facing notification then navigate to sign-in
+      try {
+        setSessionExpiredVisible(true);
+      } catch (e) {}
+
+      setTimeout(() => {
+        try {
+          router.replace('/(auth)/sign-in' as any);
+        } catch (e) {}
+        try {
+          setSessionExpiredVisible(false);
+        } catch (e) {}
+      }, 1200);
+    };
+
+    // If an event was emitted before we mounted, handle it immediately
+    try {
+      if (consumeSessionExpired()) {
+        handle();
+      }
+    } catch (e) {}
+
+    const unsubscribe = onSessionExpired(() => {
+      void handle();
+    });
+
+    return () => {
+      try {
+        unsubscribe();
+      } catch (e) {}
+    };
+  }, [router]);
 
   // Handle deep links
   useEffect(() => {
@@ -137,6 +194,13 @@ function RootLayout() {
               </Stack>
               <StatusBar style="auto" />
               <OfflineIndicator />
+              <Snackbar
+                visible={sessionExpiredVisible}
+                onDismiss={() => setSessionExpiredVisible(false)}
+                duration={2000}
+              >
+                Session expired — please sign in again.
+              </Snackbar>
             </ThemeProvider>
           </PaperProvider>
         </PersistQueryClientProvider>

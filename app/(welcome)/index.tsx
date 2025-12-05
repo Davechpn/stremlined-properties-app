@@ -5,8 +5,8 @@
  */
 
 import { APP_NAME } from '@/constants/app';
-import { logToReactotron } from '@/services/monitoring/reactotron';
 import { mediumImpact } from '@/lib/utils/haptics';
+import { logToReactotron } from '@/services/monitoring/reactotron';
 import { useRouter } from 'expo-router';
 import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';

@@ -7,8 +7,8 @@
 
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
-import { OrganizationWithMember } from '@/types/organization';
 import { lightImpact, mediumImpact } from '@/lib/utils/haptics';
+import { OrganizationWithMember } from '@/types/organization';
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { Card, Text, useTheme } from 'react-native-paper';

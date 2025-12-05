@@ -12,10 +12,11 @@ import { LoadingIndicator } from '@/components/ui/loading-indicator';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { usePermissions } from '@/hooks/use-permissions';
 import { useTeamManagement } from '@/hooks/use-teams';
+import { lightImpact } from '@/lib/utils/haptics';
 import { MemberWithUser } from '@/services/api/teams';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
+import * as Haptics from 'expo-haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
@@ -25,10 +26,20 @@ export default function TeamMembersScreen() {
   const theme = useTheme();
   const router = useRouter();
   const { activeOrganizationId } = useActiveOrganization();
-  const { canInviteMembers } = usePermissions();
+  const { canInviteMembers, currentRole, currentMembership } = usePermissions();
 
   const [searchQuery, setSearchQuery] = useState('');
   const [refreshing, setRefreshing] = useState(false);
+
+  // Debug permissions
+  useEffect(() => {
+    console.log('🔍 Teams Screen Permissions:', {
+      activeOrganizationId,
+      currentRole,
+      canInviteMembers,
+      membershipData: currentMembership,
+    });
+  }, [activeOrganizationId, currentRole, canInviteMembers, currentMembership]);
 
   // Fetch team members
   const {
@@ -95,8 +106,8 @@ export default function TeamMembersScreen() {
 
   // Handle invite press
   const handleInvitePress = () => {
-    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-    router.push('/(app)/teams/invite' as any);
+    lightImpact();
+    router.push('/teams/invite');
   };
 
   // Handle search
@@ -221,8 +232,11 @@ export default function TeamMembersScreen() {
       {canInviteMembers && (
         <FAB
           icon="account-plus"
-          label="Invite Member"
-          style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+          label="Invite"
+          mode="elevated"
+          variant="primary"
+          style={styles.fab}
+          color="#FFFFFF"
           onPress={handleInvitePress}
         />
       )}
@@ -281,5 +295,14 @@ const styles = StyleSheet.create({
     margin: 16,
     right: 0,
     bottom: 0,
+    borderRadius: 16,
+    elevation: 4,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
   },
 });

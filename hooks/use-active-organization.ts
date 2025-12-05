@@ -5,10 +5,10 @@
  * Handles organization switching with AsyncStorage persistence and query invalidation.
  */
 
+import { errorFeedback, successFeedback } from '@/lib/utils/haptics';
 import { useSwitchOrganization } from '@/services/api/organizations';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as Sentry from '@sentry/react-native';
-import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useEffect, useState } from 'react';
 
 const ACTIVE_ORG_KEY = '@streamlined:active_org';
@@ -44,8 +44,10 @@ export const useActiveOrganization = () => {
    */
   const switchOrganization = async (organizationId: string) => {
     try {
-      // Call API to update server-side session
-      await switchOrganizationMutation.mutateAsync({ organizationId });
+      // For now, just update local state and storage
+      // The backend doesn't have an active organization endpoint yet
+      // TODO: Add API call when backend endpoint is available
+      // await switchOrganizationMutation.mutateAsync({ organizationId });
 
       // Update local state
       setActiveOrganizationId(organizationId);

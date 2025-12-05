@@ -137,7 +137,8 @@ export function ProfileForm({
         onChangeText={handleChange('email')}
         onBlur={handleBlur('email')}
         error={getFieldError('email')}
-        disabled={disabled}
+        disabled={true}
+        editable={false}
         autoCapitalize="none"
         autoComplete="email"
         keyboardType="email-address"

@@ -8,10 +8,10 @@
 import { InviteForm, InviteFormData } from '@/components/teams/invite-form';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useInvitationManagement } from '@/hooks/use-invitations';
-import { Role } from '@/types/organization';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
 import { logToReactotron } from '@/services/monitoring/reactotron';
+import { Role } from '@/types/organization';
 import * as Sentry from '@sentry/react-native';
-import { successFeedback, errorFeedback, lightImpact } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View } from 'react-native';
@@ -62,7 +62,7 @@ export default function InviteMemberScreen() {
         router.back();
       }, 1500);
     } catch (error: any) {
-      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+      await errorFeedback();
 
       logToReactotron('Invitation send error', {
         error: error instanceof Error ? error.message : 'Unknown error',
@@ -75,26 +75,26 @@ export default function InviteMemberScreen() {
       });
 
       // Handle specific error cases
-      const errorMessage = error?.response?.data?.error?.message || 'Failed to send invitation';
-      const errorCode = error?.response?.data?.error?.code;
+      const errorMessage = error?.response?.data?.message || 'Failed to send invitation';
+      const errors = error?.response?.data?.errors || [];
 
-      if (errorCode === 'ALREADY_MEMBER') {
+      if (errors.includes('ALREADY_MEMBER') || errorMessage.toLowerCase().includes('already a member')) {
         Alert.alert(
           'Already a Member',
           'This user is already a member of the organization.',
-          [{ text: 'OK', onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) }]
+          [{ text: 'OK', onPress: () => lightImpact() }]
         );
-      } else if (errorCode === 'DUPLICATE_INVITATION') {
+      } else if (errors.includes('DUPLICATE_INVITATION') || errorMessage.toLowerCase().includes('already exists')) {
         Alert.alert(
           'Invitation Already Sent',
           'A pending invitation already exists for this contact.',
-          [{ text: 'OK', onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) }]
+          [{ text: 'OK', onPress: () => lightImpact() }]
         );
       } else {
         Alert.alert(
           'Invitation Failed',
           errorMessage,
-          [{ text: 'OK', onPress: () => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light) }]
+          [{ text: 'OK', onPress: () => lightImpact() }]
         );
       }
 

@@ -1,18 +1,19 @@
 import { IconSymbol } from '@/components/ui/icon-symbol';
+import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
 import { useOrganizations } from '@/hooks/use-organizations';
 import { usePermissions } from '@/hooks/use-permissions';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
 import { useProfile } from '@/services/api/profile';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import { Role } from '@/types/organization';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import * as Sentry from '@sentry/react-native';
-import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import { Drawer } from 'expo-router/drawer';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, View } from 'react-native';
-import { Avatar, Divider, Text, useTheme } from 'react-native-paper';
+import { Avatar, Divider, IconButton, Text, useTheme } from 'react-native-paper';
 
 function CustomDrawerContent(props: any) {
   const theme = useTheme();
@@ -163,6 +164,37 @@ function CustomDrawerContent(props: any) {
 
 export default function DrawerLayout() {
   const theme = useTheme();
+  const router = useRouter();
+  const { data: organizations, isLoading: isLoadingOrgs } = useOrganizations();
+  const { activeOrganizationId, switchOrganization } = useActiveOrganization();
+
+  // Auto-select first organization if none is active
+  useEffect(() => {
+    console.log('🔵 [Tabs Layout] Checking organization selection:', {
+      isLoadingOrgs,
+      hasOrganizations: !!organizations,
+      organizationsCount: organizations?.length,
+      activeOrganizationId,
+      shouldAutoSelect: !isLoadingOrgs && organizations && organizations.length > 0 && !activeOrganizationId,
+    });
+
+    if (!isLoadingOrgs && organizations && organizations.length > 0 && !activeOrganizationId) {
+      const firstOrg = organizations[0];
+      console.log('🟢 [Tabs Layout] Auto-selecting first organization:', {
+        orgId: firstOrg.id,
+        orgName: firstOrg.name,
+        role: firstOrg.role,
+      });
+      
+      switchOrganization(firstOrg.id).catch((error) => {
+        console.error('🔴 [Tabs Layout] Failed to auto-select organization:', error);
+        Sentry.captureException(error, {
+          tags: { context: 'tabs-layout-auto-select-org' },
+          extra: { organizationId: firstOrg.id },
+        });
+      });
+    }
+  }, [organizations, activeOrganizationId, isLoadingOrgs]);
 
   return (
     <Drawer
@@ -190,7 +222,14 @@ export default function DrawerLayout() {
         options={{
           title: 'Organizations',
           drawerLabel: 'Organizations',
-          headerShown: false,
+          headerShown: true,
+          headerLeft: () => (
+            <IconButton
+              icon="arrow-left"
+              iconColor={theme.colors.onSurface}
+              onPress={() => router.back()}
+            />
+          ),
         }}
       />
       <Drawer.Screen
@@ -199,6 +238,13 @@ export default function DrawerLayout() {
           title: 'Profile',
           drawerLabel: 'Profile',
           headerShown: false,
+          headerLeft: () => (
+            <IconButton
+              icon="arrow-left"
+              iconColor={theme.colors.onSurface}
+              onPress={() => router.back()}
+            />
+          ),
         }}
       />
       <Drawer.Screen
@@ -206,7 +252,14 @@ export default function DrawerLayout() {
         options={{
           title: 'Team',
           drawerLabel: 'Team',
-          headerShown: false,
+          headerShown: true,
+          headerLeft: () => (
+            <IconButton
+              icon="arrow-left"
+              iconColor={theme.colors.onSurface}
+              onPress={() => router.back()}
+            />
+          ),
         }}
       />
       <Drawer.Screen
@@ -214,7 +267,14 @@ export default function DrawerLayout() {
         options={{
           title: 'Invitations',
           drawerLabel: 'Invitations',
-          headerShown: false,
+          headerShown: true,
+          headerLeft: () => (
+            <IconButton
+              icon="arrow-left"
+              iconColor={theme.colors.onSurface}
+              onPress={() => router.back()}
+            />
+          ),
         }}
       />
     </Drawer>

@@ -5,18 +5,18 @@
  * Provides access to edit profile, settings, and sign out.
  */
 
+import { AuthMethodItem, AuthMethods } from '@/components/profile/auth-methods';
 import { ProfileHeader } from '@/components/profile/profile-header';
-import { AuthMethods, AuthMethodItem } from '@/components/profile/auth-methods';
 import { ErrorMessage } from '@/components/ui/error-message';
 import { LoadingIndicator } from '@/components/ui/loading-indicator';
 import { ROLE_DESCRIPTIONS } from '@/constants/roles';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
 import { useOrganizations } from '@/hooks/use-organizations';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
 import { useProfile } from '@/services/api/profile';
 import { AuthMethod } from '@/types/auth';
 import { Role } from '@/types/organization';
-import { lightImpact, mediumImpact, heavyImpact, successFeedback, errorFeedback, warningFeedback, selectionChanged } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';

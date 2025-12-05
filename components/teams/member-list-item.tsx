@@ -7,10 +7,10 @@
 
 import { Avatar } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
+import { lightImpact } from '@/lib/utils/haptics';
 import { MemberWithUser } from '@/services/api/teams';
 import { Role } from '@/types/organization';
 import { formatDistanceToNow } from 'date-fns';
-import { lightImpact } from '@/lib/utils/haptics';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { List, Text, useTheme } from 'react-native-paper';
@@ -66,7 +66,7 @@ export function MemberListItem({
 
   // Format last active time
   const lastActiveText = React.useMemo(() => {
-    if (!member.user.lastActiveAt) return 'Never';
+    if (!member.user?.lastActiveAt) return 'Never';
     
     try {
       return formatDistanceToNow(new Date(member.user.lastActiveAt), {
@@ -75,7 +75,7 @@ export function MemberListItem({
     } catch {
       return 'Unknown';
     }
-  }, [member.user.lastActiveAt]);
+  }, [member.user?.lastActiveAt]);
 
   // Format join date
   const joinedText = React.useMemo(() => {
@@ -104,8 +104,8 @@ export function MemberListItem({
       {/* Avatar */}
       <View style={styles.avatar}>
         <Avatar
-          uri={member.user.profilePhotoUrl}
-          name={member.user.name}
+          uri={member.user?.profilePhotoUrl}
+          name={member.user?.name || 'Unknown'}
           size={48}
         />
       </View>
@@ -115,14 +115,14 @@ export function MemberListItem({
         {/* Name and role */}
         <View style={styles.header}>
           <Text variant="titleMedium" style={styles.name} numberOfLines={1}>
-            {member.user.name}
+            {member.user?.name || 'Unknown User'}
           </Text>
           <Badge role={member.role as Role} size="small" />
         </View>
 
         {/* Contact info */}
         <View style={styles.contactInfo}>
-          {member.user.email && (
+          {member.user?.email && (
             <Text
               variant="bodySmall"
               style={[styles.contact, { color: theme.colors.onSurfaceVariant }]}
@@ -131,7 +131,7 @@ export function MemberListItem({
               {member.user.email}
             </Text>
           )}
-          {member.user.phoneNumber && !member.user.email && (
+          {member.user?.phoneNumber && !member.user?.email && (
             <Text
               variant="bodySmall"
               style={[styles.contact, { color: theme.colors.onSurfaceVariant }]}

@@ -6,15 +6,86 @@
  */
 
 import {
-  useAcceptInvitation,
-  useInvitations,
-  useInvitationByToken,
-  useRevokeInvitation,
-  useSendInvitation,
+    useAcceptInvitation,
+    useInvitationByToken,
+    useInvitations,
+    useRevokeInvitation,
+    useSendInvitation,
+    useUserInvitations,
 } from '@/services/api/invitations';
 import { ContactType, InvitationStatus, SendInvitationRequest } from '@/types/invitation';
-import { Role } from '@/types/organization';
 import { useMemo } from 'react';
+
+/**
+ * Hook for managing user invitations (sent and received)
+ * Uses GET /api/v1/invitations
+ * 
+ * @example
+ * ```tsx
+ * const { sentInvitations, receivedInvitations, isLoading, refetch } = useUserInvitationsManagement();
+ * 
+ * // Display sent invitations
+ * sentInvitations.map(inv => <InvitationItem key={inv.id} invitation={inv} />)
+ * 
+ * // Display received invitations
+ * receivedInvitations.map(inv => <InvitationCard key={inv.id} invitation={inv} />)
+ * ```
+ */
+export function useUserInvitationsManagement() {
+  // Query
+  const {
+    data,
+    isLoading,
+    error,
+    refetch,
+  } = useUserInvitations();
+
+  // Computed values
+  const sentInvitations = useMemo(() => data?.sentInvitations || [], [data]);
+  const receivedInvitations = useMemo(() => data?.receivedInvitations || [], [data]);
+
+  const pendingSentCount = useMemo(
+    () => sentInvitations.filter((inv) => inv.status.toLowerCase() === 'pending').length,
+    [sentInvitations]
+  );
+
+  const pendingReceivedCount = useMemo(
+    () => receivedInvitations.filter((inv) => inv.status.toLowerCase() === 'pending').length,
+    [receivedInvitations]
+  );
+
+  const expiredSentCount = useMemo(
+    () => sentInvitations.filter((inv) => inv.isExpired).length,
+    [sentInvitations]
+  );
+
+  const expiredReceivedCount = useMemo(
+    () => receivedInvitations.filter((inv) => inv.isExpired).length,
+    [receivedInvitations]
+  );
+
+  return {
+    // Data
+    sentInvitations,
+    receivedInvitations,
+    pendingSentCount,
+    pendingReceivedCount,
+    expiredSentCount,
+    expiredReceivedCount,
+
+    // Loading states
+    isLoading,
+
+    // Error
+    error,
+
+    // Actions
+    refetch,
+
+    // Raw response (for advanced usage)
+    data,
+  };
+}
 
 /**
  * Hook for managing invitations
@@ -64,10 +135,16 @@ export function useInvitationManagement(
       throw new Error('Organization ID is required to send invitation');
     }
 
-    return sendInvitationMutation.mutateAsync({
+    // Convert to API format
+    const apiRequest = {
       organizationId,
-      ...request,
-    });
+      email: request.inviteeContactType === ContactType.EMAIL ? request.inviteeContact : undefined,
+      phoneNumber: request.inviteeContactType === ContactType.PHONE ? request.inviteeContact : undefined,
+      role: request.assignedRole,
+      message: request.message || undefined,
+    };
+
+    return sendInvitationMutation.mutateAsync(apiRequest);
   };
 
   const revokeInvitation = async (token: string) => {

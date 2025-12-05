@@ -5,19 +5,19 @@
  * Includes real-time validation and optimistic updates.
  */
 
-import { ProfileForm, ProfileFormData } from '@/components/profile/profile-form';
 import { PhotoUpload } from '@/components/profile/photo-upload';
+import { ProfileForm, ProfileFormData } from '@/components/profile/profile-form';
 import { ErrorMessage } from '@/components/ui/error-message';
+import { IconSymbol } from '@/components/ui/icon-symbol';
 import { LoadingIndicator } from '@/components/ui/loading-indicator';
-import { useProfile, useUpdateProfile, useUploadProfilePhoto, useDeleteProfilePhoto } from '@/services/api/profile';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
+import { useDeleteProfilePhoto, useProfile, useUpdateProfile, useUploadProfilePhoto } from '@/services/api/profile';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
-import { useRouter, useNavigation } from 'expo-router';
+import { useNavigation, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, View, TouchableOpacity } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { Button, Snackbar, useTheme } from 'react-native-paper';
-import { IconSymbol } from '@/components/ui/icon-symbol';
 
 export default function EditProfileScreen() {
   const theme = useTheme();
@@ -82,11 +82,35 @@ export default function EditProfileScreen() {
       logToReactotron('Profile update error', {
         error: error instanceof Error ? error.message : 'Unknown error',
         response: error?.response?.data,
+        status: error?.response?.status,
       });
 
       Sentry.captureException(error, {
         tags: { context: 'profile-update' },
       });
+
+      // Handle authentication errors (401, 500 with invalid token)
+      const status = error?.response?.status;
+      const errorMessage = error?.response?.data?.message || '';
+      const isAuthError = status === 401 || 
+                         (status === 500 && errorMessage.toLowerCase().includes('token'));
+
+      if (isAuthError) {
+        Alert.alert(
+          'Session Expired',
+          'Your session has expired. Please sign in again.',
+          [
+            {
+              text: 'OK',
+              onPress: () => {
+                // Clear auth state and navigate to sign in
+                router.replace('/(auth)/sign-in');
+              },
+            },
+          ]
+        );
+        return;
+      }
 
       // Handle validation errors from API
       if (error?.response?.data?.errors) {

@@ -6,11 +6,10 @@
  */
 
 import {
-  MemberWithUser,
-  useRemoveMember,
-  useTeamMember,
-  useTeamMembers,
-  useUpdateMemberRole,
+    useRemoveMember,
+    useTeamMember,
+    useTeamMembers,
+    useUpdateMemberRole
 } from '@/services/api/teams';
 import { Role } from '@/types/organization';
 import { useMemo } from 'react';

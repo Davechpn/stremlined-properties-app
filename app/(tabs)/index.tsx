@@ -22,10 +22,10 @@ import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useAuth } from '@/hooks/use-auth';
 import { useOrganizations } from '@/hooks/use-organizations';
 import { usePermissions } from '@/hooks/use-permissions';
+import { errorFeedback, lightImpact, successFeedback } from '@/lib/utils/haptics';
 import { useProfile } from '@/services/api/profile';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import { lightImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
@@ -190,9 +190,9 @@ export default function HomeScreen() {
   };
 
   // Handle create organization
-  const handleCreateOrganization = () => {
-    // Will be implemented when create organization screen is added
-    console.log('Create organization');
+  const handleCreateOrganization = async () => {
+    await lightImpact();
+    router.push('/organizations/create' as any);
   };
 
   // Handle organization switcher

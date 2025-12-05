@@ -1,4 +1,4 @@
-import { successFeedback, errorFeedback } from '@/lib/utils/haptics';
+import { errorFeedback, successFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { StyleSheet, View } from 'react-native';

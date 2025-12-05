@@ -11,14 +11,14 @@ import { ErrorMessage } from '@/components/ui/error-message';
 import { LoadingIndicator } from '@/components/ui/loading-indicator';
 import { useActiveOrganization } from '@/hooks/use-active-organization';
 import { useOrganizations } from '@/hooks/use-organizations';
+import { errorFeedback, lightImpact, mediumImpact, successFeedback } from '@/lib/utils/haptics';
 import { useSwitchOrganization } from '@/services/api/organizations';
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
-import { lightImpact, mediumImpact, successFeedback, errorFeedback } from '@/lib/utils/haptics';
 import { useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { FlatList, RefreshControl, StyleSheet, View } from 'react-native';
-import { Snackbar, Text, useTheme } from 'react-native-paper';
+import { FAB, Snackbar, useTheme } from 'react-native-paper';
 
 export default function OrganizationsScreen() {
   const theme = useTheme();
@@ -99,6 +99,12 @@ export default function OrganizationsScreen() {
     }
   };
 
+  // Handle create organization
+  const handleCreateOrganization = async () => {
+    await lightImpact();
+    router.push('/organizations/create' as any);
+  };
+
   // Handle refresh
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -151,7 +157,6 @@ export default function OrganizationsScreen() {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* Organizations list */}
-      <Text>Organizations</Text>
       <FlatList
         data={organizations || []}
         keyExtractor={(item) => item.id}
@@ -180,6 +185,8 @@ export default function OrganizationsScreen() {
             illustrationType="organizations"
             title="No Organizations"
             description="You are not a member of any organizations yet."
+            actionLabel="Create Organization"
+            onAction={handleCreateOrganization}
           />
         }
         // Performance optimizations
@@ -201,6 +208,14 @@ export default function OrganizationsScreen() {
       >
         {snackbarMessage}
       </Snackbar>
+
+      {/* Floating Action Button to create organization */}
+      <FAB
+        icon="plus"
+        style={[styles.fab, { backgroundColor: theme.colors.primary }]}
+        onPress={handleCreateOrganization}
+        label="New Organization"
+      />
     </View>
   );
 }
@@ -216,10 +231,17 @@ const styles = StyleSheet.create({
   },
   listContent: {
     padding: 16,
+    paddingBottom: 100, // Space for FAB
   },
   emptyContent: {
     flexGrow: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    bottom: 0,
   },
 });

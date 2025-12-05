@@ -102,18 +102,44 @@ export const useUpdateProfile = () => {
 
   return useMutation<User, Error, UpdateProfileRequest>({
     mutationFn: async (request) => {
+      console.log('🔵 [Profile API] Updating profile at: /auth/profile');
+      console.log('🔵 [Profile API] Request payload:', request);
+      
       try {
-        const { data } = await apiClient.patch<ApiResponse<User>>(
-          '/users/me',
+        const { data } = await apiClient.put<ApiResponse<User>>(
+          '/auth/profile',
           request
         );
-        if (!data.data) {
-          throw new Error('No data returned from API');
+        
+        console.log('🔵 [Profile API] Update response:', JSON.stringify(data, null, 2));
+        
+        // Check if response has the expected structure
+        if (!data) {
+          console.error('🔴 [Profile API] No response data');
+          throw new Error('No response from server');
         }
-        return data.data;
+        
+        // Handle both wrapped and direct user response
+        const userData = data.data || (data as any);
+        
+        if (!userData || !userData.id) {
+          console.error('🔴 [Profile API] Invalid user data in response:', data);
+          throw new Error('Invalid user data returned from API');
+        }
+        
+        console.log('🟢 [Profile API] Profile updated successfully:', userData);
+        return userData;
       } catch (error) {
+        console.error('🔴 [Profile API] Error updating profile:', error);
+        console.error('🔴 [Profile API] Error details:', {
+          message: error instanceof Error ? error.message : 'Unknown error',
+          response: (error as any)?.response?.data,
+          status: (error as any)?.response?.status,
+        });
+        
         Sentry.captureException(error, {
           tags: { api_operation: 'update-profile' },
+          extra: { request },
         });
         throw error;
       }

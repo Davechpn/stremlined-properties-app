@@ -7,10 +7,10 @@
 
 import { logToReactotron } from '@/services/monitoring/reactotron';
 import * as Sentry from '@sentry/react-native';
+import * as Updates from 'expo-updates';
 import React, { Component, ErrorInfo, ReactNode } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { Button, Card, Text, useTheme } from 'react-native-paper';
-import * as Updates from 'expo-updates';
 import { IconSymbol } from './icon-symbol';
 
 interface Props {

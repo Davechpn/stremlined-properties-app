@@ -68,6 +68,27 @@ export interface SendInvitationRequest {
 }
 
 /**
+ * Send invitation request payload for API
+ */
+export interface SendInvitationAPIRequest {
+  organizationId: string;
+  email?: string;
+  phoneNumber?: string;
+  role: string;
+  message?: string;
+}
+
+/**
+ * Send invitation response from API
+ */
+export interface SendInvitationAPIResponse {
+  success: boolean;
+  message: string;
+  invitation: InvitationFromAPI;
+  errors?: string[];
+}
+
+/**
  * Accept invitation response
  */
 export interface AcceptInvitationResponse {
@@ -81,4 +102,33 @@ export interface AcceptInvitationResponse {
     invitedBy?: string | null;
   };
   invitation: Invitation;
+}
+
+/**
+ * Invitation from API response
+ */
+export interface InvitationFromAPI {
+  id: string;
+  organizationId: string;
+  organizationName: string;
+  inviterName: string;
+  email?: string;
+  phoneNumber?: string;
+  role: string;
+  status: string;
+  createdAt: string;
+  expiresAt: string;
+  isExpired: boolean;
+  daysRemaining: number;
+}
+
+/**
+ * User invitations response from GET /api/v1/invitations
+ */
+export interface UserInvitationsResponse {
+  success: boolean;
+  message: string;
+  sentInvitations: InvitationFromAPI[];
+  receivedInvitations: InvitationFromAPI[];
+  errors?: string[];
 }

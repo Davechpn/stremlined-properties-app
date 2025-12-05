@@ -5,10 +5,10 @@
  * Provides current connection status and type.
  */
 
-import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
-import { useEffect, useState } from 'react';
 import { logToReactotron } from '@/services/monitoring/reactotron';
+import NetInfo, { NetInfoState } from '@react-native-community/netinfo';
 import * as Sentry from '@sentry/react-native';
+import { useEffect, useState } from 'react';
 
 export interface OfflineStatus {
   isConnected: boolean;
