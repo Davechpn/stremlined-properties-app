@@ -222,7 +222,7 @@ export default function DrawerLayout() {
         options={{
           title: 'Organizations',
           drawerLabel: 'Organizations',
-          headerShown: true,
+          headerShown: false,
           headerLeft: () => (
             <IconButton
               icon="arrow-left"
@@ -252,7 +252,7 @@ export default function DrawerLayout() {
         options={{
           title: 'Team',
           drawerLabel: 'Team',
-          headerShown: true,
+          headerShown: false,
           headerLeft: () => (
             <IconButton
               icon="arrow-left"
@@ -267,7 +267,7 @@ export default function DrawerLayout() {
         options={{
           title: 'Invitations',
           drawerLabel: 'Invitations',
-          headerShown: true,
+          headerShown: false,
           headerLeft: () => (
             <IconButton
               icon="arrow-left"

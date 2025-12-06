@@ -46,7 +46,10 @@
         }
       ],
       "edgeToEdgeEnabled": true,
-      "predictiveBackGestureEnabled": false
+      "predictiveBackGestureEnabled": false,
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "output": "static",
@@ -77,6 +80,9 @@
       "eas": {
         "projectId": "3f2a3768-e7b2-4561-a590-d73b2cf48354"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/3f2a3768-e7b2-4561-a590-d73b2cf48354"
     }
   }
 }
